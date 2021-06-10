@@ -82,28 +82,22 @@ namespace ConsoleSnakeTest {
             BodyPart = bodyPart;
         }
 
-        public void ChangeBodyPart(SnakeType newPart) {
-            if (BodyPart != newPart)
-                BodyPart = newPart;
-        }
-
         public override Collision GetCollision() {
             return Collision.Snake;
         }
 
         public void AddHead(SnakeItem newHead) {
             if (BodyPart == SnakeType.Head) {
-                next = newHead;
-                BodyPart = prev != null ? SnakeType.Body : SnakeType.Tail;
-                next.prev = this;
+                prev = newHead;
+                BodyPart = next != null ? SnakeType.Body : SnakeType.Tail;
+                newHead.next = this;
             }
         }
 
-        public void RemoveTail() {
-            if (BodyPart == SnakeType.Tail && prev != null) {
-                prev.BodyPart = SnakeType.Tail;
-                prev.next = null;
-            }
+        public void BecomeTail() {
+            if (BodyPart != SnakeType.Head)
+                BodyPart = SnakeType.Tail;
+            next = null;
         }
     }
 
@@ -268,7 +262,6 @@ namespace ConsoleSnakeTest {
         Point tailCoordinates;
         SnakeItem snakeHead;
 
-        SnakeItem Tail => gameGrid[tailCoordinates.X, tailCoordinates.Y].GetSnakeItem();
         public int Height { get; }
         public int Width { get; }
         public FieldItem this[int i, int j] { get { return gameGrid[i, j]; } }
@@ -314,6 +307,10 @@ namespace ConsoleSnakeTest {
             gameGrid[point.X, point.Y] = item;
         }
 
+        SnakeItem GetSnakeItem(Point point) {
+            return gameGrid[point.X, point.Y].GetSnakeItem();
+        }
+
         public void SetNewSnakeHead(SnakePoint newHead) {
             SnakeItem headItem = new SnakeItem(newHead.Direction, SnakeType.Head);
             if (snakeHead != null) {
@@ -328,8 +325,9 @@ namespace ConsoleSnakeTest {
         }
 
         public void RemoveSnakeTail(Point newTail) {
-            Tail.RemoveTail();
-            AddNewItem(tailCoordinates, new EmptyItem());
+            GetSnakeItem(newTail).BecomeTail();
+            if (GetSnakeItem(tailCoordinates).BodyPart != SnakeType.Head)
+                AddNewItem(tailCoordinates, new EmptyItem());
             tailCoordinates = newTail;
         }
 
@@ -362,13 +360,13 @@ namespace ConsoleSnakeTest {
         Random rand;
         Direction currentlySetDirection = Direction.Right;
 
-        public FieldItem[,] GameGrid { get; }
+        public GameGrid Grid { get; protected set; }
 
         protected virtual int PlayableArea { get { return Height * Width - 2 * Height - 2 * Width + 4; } }
         protected bool IsGameOver { get; set; } = false;
         protected bool Win { get { return snake.Length == PlayableArea; } }
         public virtual bool Borderless => false;
-        public bool PortalBorders => snake is PortalSnake;
+        public bool PortalBorders => snake is PortalSnake; //???
         public int SnakeLenght { get { return snake.Length; } }
         public int Height { get; }
         public int Width { get; }
@@ -385,10 +383,9 @@ namespace ConsoleSnakeTest {
         public Field(int height, int width, bool allowPortalBorders) {
             Height = height;
             Width = width;
-            GameGrid = new FieldItem[height, width];
             InitializeGameGrid();
             InitializeSnake(allowPortalBorders);
-            SyncHead(snake.Head);
+            Grid.SetNewSnakeHead(snake.Head);
             rand = new Random();
             GenerateFood();
         }
@@ -405,7 +402,7 @@ namespace ConsoleSnakeTest {
         }
 
         protected Collision IsCollision(int headX, int headY) {
-            var item = GameGrid[headX, headY];
+            var item = Grid[headX, headY];
             var collision = item.GetCollision();
             if (collision == Collision.Snake)
                 return item.GetSnakeItem().BodyPart == SnakeType.Tail ? Collision.No : Collision.Snake;
@@ -427,41 +424,26 @@ namespace ConsoleSnakeTest {
         }
 
         protected virtual void InitializeGameGrid() {
-            for (int i = 0; i < Height; i++)
-                for (int j = 0; j < Width; j++)
-                    if (IsBorder(i, j))
-                        GameGrid[i, j] = new BorderItem();
-                    else
-                        GameGrid[i, j] = new EmptyItem();
+            Grid = new GameGrid(Height, Width, false);
         }
 
         protected virtual void InitializeSnake(bool portalSnake) {
             snake = portalSnake ? new PortalSnake(Height / 2, Width / 2, Height - 1, Width - 1, borderWidth) : new Snake(Height / 2, Width / 2); // watch start head pos
         }
 
-        void SyncHead(SnakePoint newHead) {
-            GameGrid[newHead.X, newHead.Y] = new SnakeItem(newHead.Direction, SnakeType.Head);
-        }
-
-        void ChangeSnakeHeadBodyPart(SnakeType newHeadBodyPart) {
-            GameGrid[snake.Head.X, snake.Head.Y].GetSnakeItem().ChangeBodyPart(newHeadBodyPart);
+        void MoveSnakeHead() {
+            snake.Move();
+            Grid.SetNewSnakeHead(snake.Head);
         }
 
         void MoveSnake() {
-            if (snake.Length > 1)
-                ChangeSnakeHeadBodyPart(snake.Length == 2 ? SnakeType.Tail : SnakeType.Body);
-            GameGrid[snake.Tail.X, snake.Tail.Y] = new EmptyItem();
-            snake.Move();
-            SyncHead(snake.Head);
-            if (snake.Length > 2)
-                GameGrid[snake.Tail.X, snake.Tail.Y].GetSnakeItem().ChangeBodyPart(SnakeType.Tail);
+            MoveSnakeHead();
+            Grid.RemoveSnakeTail(snake.Tail);
         }
 
         void MoveAndExtendSnake() {
             snake.NeedExtend = true;
-            ChangeSnakeHeadBodyPart(snake.Length == 1 ? SnakeType.Tail : SnakeType.Body);
-            snake.Move();
-            SyncHead(snake.Head);
+            MoveSnakeHead();
         }
 
         protected virtual void ProcessBorderCollision() {
@@ -493,8 +475,8 @@ namespace ConsoleSnakeTest {
                 do {
                     x = rand.Next(Height);
                     y = rand.Next(Width);
-                } while (GameGrid[x, y].Type != FieldItemType.Empty);
-                GameGrid[x, y] = new FoodItem(smallFoodValue);
+                } while (Grid[x, y].Type != FieldItemType.Empty);
+                Grid.AddFood(new Point(x, y), smallFoodValue);
             }
         }
     }
@@ -512,9 +494,7 @@ namespace ConsoleSnakeTest {
         }
 
         protected override void InitializeGameGrid() {
-            for (int i = 0; i < Height; i++)
-                for (int j = 0; j < Width; j++)
-                    GameGrid[i, j] = new EmptyItem();
+            Grid = new GameGrid(Height, Width, true);
         }
 
         protected override void InitializeSnake(bool portalSnake) {
@@ -638,7 +618,7 @@ namespace ConsoleSnakeTest {
         public void DrawGameField() {
             for (int i = 0; i < drawingField.Height; i++) {
                 for (int j = 0; j < drawingField.Width; j++) {
-                    DrawItem(drawingField.GameGrid[i, j]);
+                    DrawItem(drawingField.Grid[i, j]);
                 }
                 Console.WriteLine();
             }
