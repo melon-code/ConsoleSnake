@@ -349,27 +349,28 @@ namespace ConsoleSnakeTest {
             return CreateField(height, width, borderless, false);
         }
 
-        public static Field CreateField(GameGrid customGameGrid) {
-            return null; //todo
+        public static Field CreateField(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection) {
+            return new Field(customGameGrid, initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
         }
 
         const int smallFoodValue = 1;
         const int borderWidth = 1;
 
-        public Snake snake;
+        protected Snake snake;
         Random rand;
         Direction currentlySetDirection = Direction.Right;
 
         public GameGrid Grid { get; protected set; }
 
+        protected virtual int BorderWidth => borderWidth;
         protected virtual int PlayableArea { get { return Height * Width - 2 * Height - 2 * Width + 4; } }
         protected bool IsGameOver { get; set; } = false;
-        protected bool Win { get { return snake.Length == PlayableArea; } }
         public virtual bool Borderless => false;
+        protected bool Win { get { return snake.Length == PlayableArea; } }
         public bool PortalBorders => snake is PortalSnake; //???
         public int SnakeLenght { get { return snake.Length; } }
-        public int Height { get; }
-        public int Width { get; }
+        public int Height => Grid.Height;
+        public int Width => Grid.Width;
         public GameState State {
             get {
                 if (IsGameOver)
@@ -381,13 +382,9 @@ namespace ConsoleSnakeTest {
         }
 
         public Field(int height, int width, bool allowPortalBorders) {
-            Height = height;
-            Width = width;
-            InitializeGameGrid();
-            InitializeSnake(allowPortalBorders);
-            Grid.SetNewSnakeHead(snake.Head);
-            rand = new Random();
-            GenerateFood();
+            Grid = new GameGrid(height, width, Borderless);
+            snake = allowPortalBorders ? new PortalSnake(Height / 2, Width / 2, Height - BorderWidth, Width - BorderWidth, BorderWidth) : new Snake(Height / 2, Width / 2);
+            PrepareForStart();
         }
 
         public Field(int height, int width) : this(height, width, false) {
@@ -398,7 +395,15 @@ namespace ConsoleSnakeTest {
         }
 
         public Field(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection) {
-            //todo
+            Grid = customGameGrid;
+            snake = new Snake(initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
+            PrepareForStart();
+        }
+
+        void PrepareForStart() {
+            Grid.SetNewSnakeHead(snake.Head);
+            rand = new Random();
+            GenerateFood();
         }
 
         protected Collision IsCollision(int headX, int headY) {
@@ -421,14 +426,6 @@ namespace ConsoleSnakeTest {
             if (indX == 0 || indY == 0 || indX == Height - 1 || indY == Width - 1)
                 return true;
             return false;
-        }
-
-        protected virtual void InitializeGameGrid() {
-            Grid = new GameGrid(Height, Width, false);
-        }
-
-        protected virtual void InitializeSnake(bool portalSnake) {
-            snake = portalSnake ? new PortalSnake(Height / 2, Width / 2, Height - 1, Width - 1, borderWidth) : new Snake(Height / 2, Width / 2); // watch start head pos
         }
 
         void MoveSnakeHead() {
@@ -484,6 +481,7 @@ namespace ConsoleSnakeTest {
     public class BorderlessField : Field {
         const int borderWidth = 0;
 
+        protected override int BorderWidth => borderWidth;
         protected override int PlayableArea => Height * Width;
         public override bool Borderless => true;
 
@@ -491,14 +489,6 @@ namespace ConsoleSnakeTest {
         }
 
         public BorderlessField(int h, int w) : this(h, w, false) {
-        }
-
-        protected override void InitializeGameGrid() {
-            Grid = new GameGrid(Height, Width, true);
-        }
-
-        protected override void InitializeSnake(bool portalSnake) {
-            snake = portalSnake ? new PortalSnake(Height / 2, Width / 2, Height, Width, borderWidth) : new Snake(Height / 2, Width / 2);
         }
 
         protected override Collision IsCollision(Point head) {
