@@ -9,7 +9,7 @@ using Keystroke.API;
 using System.Windows.Forms;
 using System.IO;
 
-namespace ConsoleSnakeTest {
+namespace ConsoleSnake {
     public enum Direction {
         Up, Down, Left, Right
     }
@@ -395,7 +395,7 @@ namespace ConsoleSnakeTest {
         }
 
         public Field(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection) {
-            Grid = customGameGrid;
+            Grid = customGameGrid ?? throw new ArgumentNullException("Grid", "CustomGameGrid can not be null");
             snake = new Snake(initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
             PrepareForStart();
         }
@@ -1135,7 +1135,101 @@ namespace ConsoleSnakeTest {
         }
     }
 
-    public class Modif {
+    public static class CustomGameGridParser {
+        public static GameGrid Parse(int height, int width, string grid) {
+            if (height * width != grid.Length)
+                return null;
+            FieldItem[,] items = new FieldItem[height, width];
+            for (int i = 0; i < height; i++)
+                for (int j = 0; j < width; j++)
+                    items[i, j] = ParseItem(grid[i * j]);
+            return new GameGrid(height, width, false, items);
+        }
+
+        static FieldItem ParseItem(char item) {
+            switch (item) {
+                case ' ':
+                    return new EmptyItem();
+                case 'B':
+                    return new BorderItem();
+                default:
+                    return new EmptyItem();
+            }
+        }
+    }
+
+    public struct CustomGameGrid {
+        public GameGrid Grid { get; }
+        public int SnakeHeadX { get; }
+        public int SnakeHeadY { get; }
+        public Direction SnakeHeadDirection { get; }
+
+        public CustomGameGrid(int height, int width, string grid, int snakeHeadX, int snakeHeadY, Direction snakeHeadDirection) {
+            Grid = CustomGameGridParser.Parse(height, width, grid);
+            SnakeHeadX = snakeHeadX;
+            SnakeHeadY = snakeHeadY;
+            SnakeHeadDirection = snakeHeadDirection;
+        }
+    }
+
+    public static class CustomGameGridTypes {
+        public static CustomGameGrid TypeA => new CustomGameGrid(CustomGameGridTypeA.Height, CustomGameGridTypeA.Width, CustomGameGridTypeA.Grid, CustomGameGridTypeA.HeadX, 
+            CustomGameGridTypeA.HeadY, CustomGameGridTypeA.HeadDirection);
+        public static CustomGameGrid TypeB => new CustomGameGrid(CustomGameGridTypeB.Height, CustomGameGridTypeB.Width, CustomGameGridTypeB.Grid, CustomGameGridTypeB.HeadX,
+            CustomGameGridTypeB.HeadY, CustomGameGridTypeB.HeadDirection);
+        public static CustomGameGrid TypeC => new CustomGameGrid(CustomGameGridTypeC.Height, CustomGameGridTypeC.Width, CustomGameGridTypeC.Grid, CustomGameGridTypeC.HeadX,
+            CustomGameGridTypeC.HeadY, CustomGameGridTypeC.HeadDirection);
+    }
+
+    public static class CustomGameGridTypeA {
+        public const int Height = 10;
+        public const int Width = 12;
+        public const int HeadX = Height / 2;
+        public const int HeadY = Width / 2;
+        public const Direction HeadDirection = Direction.Right;
+        public const string Grid = "BBBBBBBBBBBB" +
+                                   "B          B" +
+                                   "B          B" +
+                                   "B   BBBB   B" +
+                                   "B          B" +
+                                   "B          B" +
+                                   "B   BBBB   B" +
+                                   "B          B" +
+                                   "B          B" +
+                                   "BBBBBBBBBBBB";
+    }
+
+    public static class CustomGameGridTypeB {
+        public const int Height = 3;
+        public const int Width = 10;
+        public const int HeadX = 1;
+        public const int HeadY = 1;
+        public const Direction HeadDirection = Direction.Right;
+        public const string Grid = "BBBBBBBBBB" +
+                                   "B        B" +
+                                   "BBBBBBBBBB";
+    }
+
+    public static class CustomGameGridTypeC {
+        public const int Height = 10;
+        public const int Width = 4;
+        public const int HeadX = 1;
+        public const int HeadY = 1;
+        public const Direction HeadDirection = Direction.Down;
+        public const string Grid = "BBBB" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "B  B" +
+                                   "BBBB";
+    }
+
+        public class Modif {
         public void Mod(int[] m) {
             m[0] = 11;
             m[1] = 22;
