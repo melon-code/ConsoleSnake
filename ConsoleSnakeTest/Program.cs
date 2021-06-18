@@ -245,6 +245,10 @@ namespace ConsoleSnake {
         public PortalSnake(int headX, int headY, int limitX, int limitY, int minimum) : base() {
             snake.AddFirst(new PortalSnakePoint(headX, headY, limitX, limitY, minimum));
         }
+
+        public PortalSnake(int headX, int headY, int limitX, int limitY, int minimum, Direction direction) : base() {
+            snake.AddFirst(new PortalSnakePoint(headX, headY, limitX, limitY, minimum, direction));
+        }
     }
 
     public enum GameState {
@@ -284,16 +288,15 @@ namespace ConsoleSnake {
         public GameGrid(int height, int width, bool borderless, FieldItem[,] customGameGrid) : this(height, width) {
             if (customGameGrid.Length < height * width)
                 throw new ArgumentOutOfRangeException();
-            customGameGrid.CopyTo(gameGrid, 0);
             FieldItemType borderMark = borderless ? FieldItemType.Empty : FieldItemType.Border;
             for (int i = 0; i < Height; i++)
                 for (int j = 0; j < Width; j++) {
-                    if (gameGrid[i, j] != null) {
-                        if (IsBorder(i, j) && gameGrid[i, j].Type != borderMark)
-                            gameGrid[i, j] = GetBorderMark(borderless);
-                    }
-                    else
+                    if (customGameGrid[i, j] == null)
                         gameGrid[i, j] = new EmptyItem();
+                    if (IsBorder(i, j))
+                        gameGrid[i, j] = GetBorderMark(borderless);
+                    else
+                        gameGrid[i, j] = customGameGrid[i, j];
                 }
         }
 
@@ -349,10 +352,13 @@ namespace ConsoleSnake {
             return CreateField(height, width, borderless, false);
         }
 
-        public static Field CreateField(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection) {
-            return new Field(customGameGrid, initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
+        public static Field CreateField(CustomGameGrid customGrid) {
+            return customGrid.Borderless ? new BorderlessField(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders)
+                : new Field(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders);
         }
 
+        const string cggExceptionParamName = "Grid";
+        const string cggExceptionMessage = "CustomGameGrid can not be null";
         const int smallFoodValue = 1;
         const int borderWidth = 1;
 
@@ -362,6 +368,8 @@ namespace ConsoleSnake {
 
         public GameGrid Grid { get; protected set; }
 
+        int LimitX => Height - BorderWidth;
+        int LimitY => Width - BorderWidth;
         protected virtual int BorderWidth => borderWidth;
         protected virtual int PlayableArea { get { return Height * Width - 2 * Height - 2 * Width + 4; } }
         protected bool IsGameOver { get; set; } = false;
@@ -383,7 +391,7 @@ namespace ConsoleSnake {
 
         public Field(int height, int width, bool allowPortalBorders) {
             Grid = new GameGrid(height, width, Borderless);
-            snake = allowPortalBorders ? new PortalSnake(Height / 2, Width / 2, Height - BorderWidth, Width - BorderWidth, BorderWidth) : new Snake(Height / 2, Width / 2);
+            snake = allowPortalBorders ? new PortalSnake(Height / 2, Width / 2, LimitX, LimitY, BorderWidth) : new Snake(Height / 2, Width / 2);
             PrepareForStart();
         }
 
@@ -394,9 +402,10 @@ namespace ConsoleSnake {
             //todo
         }
 
-        public Field(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection) {
-            Grid = customGameGrid ?? throw new ArgumentNullException("Grid", "CustomGameGrid can not be null");
-            snake = new Snake(initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
+        public Field(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection, bool allowPortalBorders) {
+            Grid = customGameGrid ?? throw new ArgumentNullException(cggExceptionParamName, cggExceptionMessage);
+            snake = allowPortalBorders ? new PortalSnake(initialSnakeHeadX, initialSnakeHeadY, LimitX, LimitY, BorderWidth, initialSnakeDirection)
+                : new Snake(initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection);
             PrepareForStart();
         }
 
@@ -489,6 +498,10 @@ namespace ConsoleSnake {
         }
 
         public BorderlessField(int h, int w) : this(h, w, false) {
+        }
+
+        public BorderlessField(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection, bool allowPortalBorders)
+            : base(customGameGrid, initialSnakeHeadX, initialSnakeHeadY, initialSnakeDirection, allowPortalBorders) {
         }
 
         protected override Collision IsCollision(Point head) {
@@ -616,7 +629,7 @@ namespace ConsoleSnake {
         }
     }
 
-    public class ConsoleGame { //not abstract from drawing
+    public class ConsoleGame {
         const int defaultSnakeSpeed = 6;
 
         readonly int snakeSpeed;
@@ -627,10 +640,13 @@ namespace ConsoleSnake {
         public bool AnyKeyPressed { get; private set; }
         public SnakeGameStats Results { get { return new SnakeGameStats(gameField.State == GameState.Win ? true : false, gameField.SnakeLenght); } }
 
-        public ConsoleGame(int height, int width, bool borderless, bool portalBorders, int speed) {
+        ConsoleGame(int speed, Func<Field> createField) {
             snakeSpeed = 1100 - speed * 100;
-            gameField = Field.CreateField(height, width, borderless, portalBorders);
+            gameField = createField();
             drawer = new ConsoleSnakeDrawer(gameField);
+        }
+
+        public ConsoleGame(int height, int width, bool borderless, bool portalBorders, int speed) : this(speed, () => Field.CreateField(height, width, borderless, portalBorders)) {
         }
 
         public ConsoleGame(int height, int width) : this(height, width, false, false, defaultSnakeSpeed) {
@@ -645,6 +661,9 @@ namespace ConsoleSnake {
         public ConsoleGame(int height, int width, bool borderless, bool portalBorders) : this(height, width, borderless, portalBorders, defaultSnakeSpeed) {
         }
 
+        public ConsoleGame(CustomGameGrid gameGrid, int speed) : this(speed, () => Field.CreateField(gameGrid)) {
+        }
+
         void RenderFrame() {
             if (isFirstTurn)
                 isFirstTurn = false;
@@ -656,7 +675,7 @@ namespace ConsoleSnake {
         }
 
         public void StartLoop() {
-            Renderer rend = new Renderer(snakeSpeed, RenderFrame); // time here
+            Renderer rend = new Renderer(snakeSpeed, RenderFrame);
             drawer.SetConsoleWindow();
             using (var api = new KeystrokeAPI()) {
                 api.CreateKeyboardHook((character) => {
@@ -777,6 +796,11 @@ namespace ConsoleSnake {
             ChangeCurrentPosition(false);
         }
 
+        void CheckInteractivityAndProcessInput(ConsoleKey input) {
+            if (CurrentItem.Interactive)
+                ProcessInput(input);
+        }
+
         public bool Navigation(ConsoleKeyInfo info) {
             switch (info.Key) {
                 case ConsoleKey.DownArrow:
@@ -790,13 +814,13 @@ namespace ConsoleSnake {
                         EndResult = MenuEndResult.Exit;
                         return false;
                     }
-                    ProcessInput(info.Key);
+                    CheckInteractivityAndProcessInput(info.Key);
                     break;
                 case ConsoleKey.Escape:
                     EndResult = MenuEndResult.Exit;
                     return false;
                 default:
-                    ProcessInput(info.Key);
+                    CheckInteractivityAndProcessInput(info.Key);
                     break;
             }
             return true;
@@ -807,6 +831,7 @@ namespace ConsoleSnake {
 
     public interface IMenuItem {
         bool Visible { get; set; }
+        bool Interactive { get; set; }
         string Name { get; }
 
         void Draw();
@@ -819,6 +844,7 @@ namespace ConsoleSnake {
 
     public class MenuItem : IMenuItem {
         public bool Visible { get; set; } = true;
+        public bool Interactive { get; set; } = true;
         public string Name { get; }
 
         public MenuItem(string name) {
@@ -836,6 +862,7 @@ namespace ConsoleSnake {
 
     public class ValueBasedItem<T> {
         public bool Visible { get; set; } = true;
+        public bool Interactive { get; set; } = true;
         public string Name { get; }
         public T Value { get; protected set; }
 
@@ -976,18 +1003,41 @@ namespace ConsoleSnake {
     }
 
     public class SettingsMenu : ConsoleMenu {
+        public static CustomGameGrid GetCustomGrid(int type) {
+            switch (type) {
+                case 1:
+                    return CustomGameGridTypes.TypeA;
+                case 2:
+                    return CustomGameGridTypes.TypeB;
+                case 3:
+                    return CustomGameGridTypes.TypeC;
+                default:
+                    return CustomGameGridTypes.TypeA;
+            }
+        }
+
         const string exitString = "Выход";
         const int heightIndex = 0;
         const int widthIndex = 1;
         const int bigFoodIndex = 2;
         const int portalBorderIndex = 3;
         const int snakeSpeedIndex = 4;
+        const int isCustomGridIndex = 5;
+        const int customGridTypeIndex = 6;
 
         public int Height => GetInt(heightIndex);
         public int Width => GetInt(widthIndex);
         public bool BigFood => GetBool(bigFoodIndex);
         public bool PortalBorders => GetBool(portalBorderIndex);
         public int SnakeSpeed => GetInt(snakeSpeedIndex);
+        public bool IsCustomGrid => GetBool(isCustomGridIndex);
+        public int? CustomGridType {
+            get {
+                if (IsCustomGrid)
+                    return GetInt(customGridTypeIndex);
+                return null;
+            }
+        }
 
         public SettingsMenu(IList<IMenuItem> settingsItems) : base(settingsItems, exitString) {
         }
@@ -1008,7 +1058,7 @@ namespace ConsoleSnake {
         }
 
         public override void ProcessInput(ConsoleKey input) {
-            Items[CurrentPosition].ProcessInput(input);
+            CurrentItem.ProcessInput(input);
         }
     }
 
@@ -1018,13 +1068,17 @@ namespace ConsoleSnake {
         public bool BigFood { get; }
         public bool PortalBorders { get; }
         public int SnakeSpeed { get; }
+        public bool IsCustomGrid { get; }
+        public int? CustomGridType { get; }
 
-        public SettingsResult(int height, int width, bool bigFood, bool portalBorders, int snakeSpeed) {
+        public SettingsResult(int height, int width, bool bigFood, bool portalBorders, int snakeSpeed, bool isCustomGrid, int? customGridType) {
             Height = height;
             Width = width;
             BigFood = bigFood;
             PortalBorders = portalBorders;
             SnakeSpeed = snakeSpeed;
+            IsCustomGrid = isCustomGrid;
+            CustomGridType = customGridType;
         }
     }
 
@@ -1039,11 +1093,10 @@ namespace ConsoleSnake {
 
         public static IList<IMenuItem> GetSettingsMenuList() {
             IntMenuItem customTypes = new IntMenuItem("Тип поля", 1, 1, 3);
-            BoolMenuItem portalBorders = new BoolMenuItem("Портальные границы", false);
-            IList<DependencyItem> dependencies = new List<DependencyItem>() { new DependencyItem(portalBorders, true), new DependencyItem(customTypes) };
+            IList<DependencyItem> dependencies = new List<DependencyItem>() { new DependencyItem(customTypes) };
             return new List<IMenuItem> { new IntMenuItem("Высота", defaultHeight, minHeight, Console.LargestWindowHeight),
                 new IntMenuItem("Ширина", defaultWidth, minWidth, Console.LargestWindowWidth), new BoolMenuItem("Большая еда (не робiт)", false),
-                portalBorders, new IntMenuItem("Скорость", defaultSpeed, minSpeed, maxSpeed),
+                new BoolMenuItem("Портальные границы", false), new IntMenuItem("Скорость", defaultSpeed, minSpeed, maxSpeed),
                 new DependencyBoolMenuItem("Пользовательское поле", false, dependencies), customTypes };
         }
 
@@ -1055,7 +1108,7 @@ namespace ConsoleSnake {
     public class MainMenu : ConsoleMenu {
         SettingsMenu sMenu;
 
-        public SettingsResult Settings => new SettingsResult(sMenu.Height, sMenu.Width, sMenu.BigFood, sMenu.PortalBorders, sMenu.SnakeSpeed);
+        public SettingsResult Settings => new SettingsResult(sMenu.Height, sMenu.Width, sMenu.BigFood, sMenu.PortalBorders, sMenu.SnakeSpeed, sMenu.IsCustomGrid, sMenu.CustomGridType);
 
         public MainMenu() : base(ItemsListHelper.GetMainMenuList()) {
             sMenu = new SettingsMenu(ItemsListHelper.GetSettingsMenuList());
@@ -1118,15 +1171,9 @@ namespace ConsoleSnake {
                 EndscreenMenu endMenu = new EndscreenMenu();
                 do {
                     var result = menu.Settings;
-                    //debug
-                    Console.WriteLine("Height = " + result.Height);
-                    Console.WriteLine("Width = " + result.Width);
-                    Console.WriteLine("Big food = " + result.BigFood);
-                    Console.WriteLine("Portal borders = " + result.PortalBorders);
-                    // snake game starts
-                    ConsoleGame snakeGame = new ConsoleGame(result.Height, result.Width, result.PortalBorders, result.SnakeSpeed);
+                    ConsoleGame snakeGame = result.IsCustomGrid ? new ConsoleGame(SettingsMenu.GetCustomGrid(result.CustomGridType.Value), result.SnakeSpeed)
+                        : new ConsoleGame(result.Height, result.Width, result.PortalBorders, result.SnakeSpeed);
                     snakeGame.StartLoop();
-                    //results + end menu
                     endMenu.GameResults = snakeGame.Results;
                     endscreenResult = endMenu.ShowDialog();
                 } while (endMenu.EndResult == MenuEndResult.Further && endMenu.Restart);
@@ -1136,14 +1183,14 @@ namespace ConsoleSnake {
     }
 
     public static class CustomGameGridParser {
-        public static GameGrid Parse(int height, int width, string grid) {
+        public static GameGrid Parse(int height, int width, string grid, bool borderless) {
             if (height * width != grid.Length)
                 return null;
             FieldItem[,] items = new FieldItem[height, width];
             for (int i = 0; i < height; i++)
                 for (int j = 0; j < width; j++)
-                    items[i, j] = ParseItem(grid[i * j]);
-            return new GameGrid(height, width, false, items);
+                    items[i, j] = ParseItem(grid[i * width + j]);
+            return new GameGrid(height, width, borderless, items);
         }
 
         static FieldItem ParseItem(char item) {
@@ -1158,27 +1205,31 @@ namespace ConsoleSnake {
         }
     }
 
-    public struct CustomGameGrid {
+    public struct CustomGameGrid { //watch borderless
         public GameGrid Grid { get; }
         public int SnakeHeadX { get; }
         public int SnakeHeadY { get; }
         public Direction SnakeHeadDirection { get; }
+        public bool PortalBorders { get; }
+        public bool Borderless { get; }
 
-        public CustomGameGrid(int height, int width, string grid, int snakeHeadX, int snakeHeadY, Direction snakeHeadDirection) {
-            Grid = CustomGameGridParser.Parse(height, width, grid);
+        public CustomGameGrid(int height, int width, string grid, bool borderless, int snakeHeadX, int snakeHeadY, Direction snakeHeadDirection, bool portalBorders) {
+            Grid = CustomGameGridParser.Parse(height, width, grid, borderless);
             SnakeHeadX = snakeHeadX;
             SnakeHeadY = snakeHeadY;
             SnakeHeadDirection = snakeHeadDirection;
+            PortalBorders = portalBorders;
+            Borderless = borderless;
         }
     }
 
     public static class CustomGameGridTypes {
-        public static CustomGameGrid TypeA => new CustomGameGrid(CustomGameGridTypeA.Height, CustomGameGridTypeA.Width, CustomGameGridTypeA.Grid, CustomGameGridTypeA.HeadX, 
-            CustomGameGridTypeA.HeadY, CustomGameGridTypeA.HeadDirection);
-        public static CustomGameGrid TypeB => new CustomGameGrid(CustomGameGridTypeB.Height, CustomGameGridTypeB.Width, CustomGameGridTypeB.Grid, CustomGameGridTypeB.HeadX,
-            CustomGameGridTypeB.HeadY, CustomGameGridTypeB.HeadDirection);
-        public static CustomGameGrid TypeC => new CustomGameGrid(CustomGameGridTypeC.Height, CustomGameGridTypeC.Width, CustomGameGridTypeC.Grid, CustomGameGridTypeC.HeadX,
-            CustomGameGridTypeC.HeadY, CustomGameGridTypeC.HeadDirection);
+        public static CustomGameGrid TypeA => new CustomGameGrid(CustomGameGridTypeA.Height, CustomGameGridTypeA.Width, CustomGameGridTypeA.Grid, CustomGameGridTypeA.Borderless,
+            CustomGameGridTypeA.HeadX, CustomGameGridTypeA.HeadY, CustomGameGridTypeA.HeadDirection, CustomGameGridTypeA.PortalBorders);
+        public static CustomGameGrid TypeB => new CustomGameGrid(CustomGameGridTypeB.Height, CustomGameGridTypeB.Width, CustomGameGridTypeB.Grid, CustomGameGridTypeA.Borderless,
+            CustomGameGridTypeB.HeadX, CustomGameGridTypeB.HeadY, CustomGameGridTypeB.HeadDirection, CustomGameGridTypeB.PortalBorders);
+        public static CustomGameGrid TypeC => new CustomGameGrid(CustomGameGridTypeC.Height, CustomGameGridTypeC.Width, CustomGameGridTypeC.Grid, CustomGameGridTypeA.Borderless,
+            CustomGameGridTypeC.HeadX, CustomGameGridTypeC.HeadY, CustomGameGridTypeC.HeadDirection, CustomGameGridTypeC.PortalBorders);
     }
 
     public static class CustomGameGridTypeA {
@@ -1187,6 +1238,8 @@ namespace ConsoleSnake {
         public const int HeadX = Height / 2;
         public const int HeadY = Width / 2;
         public const Direction HeadDirection = Direction.Right;
+        public const bool PortalBorders = false;
+        public const bool Borderless = false;
         public const string Grid = "BBBBBBBBBBBB" +
                                    "B          B" +
                                    "B          B" +
@@ -1205,6 +1258,8 @@ namespace ConsoleSnake {
         public const int HeadX = 1;
         public const int HeadY = 1;
         public const Direction HeadDirection = Direction.Right;
+        public const bool PortalBorders = true;
+        public const bool Borderless = false;
         public const string Grid = "BBBBBBBBBB" +
                                    "B        B" +
                                    "BBBBBBBBBB";
@@ -1216,6 +1271,8 @@ namespace ConsoleSnake {
         public const int HeadX = 1;
         public const int HeadY = 1;
         public const Direction HeadDirection = Direction.Down;
+        public const bool PortalBorders = false;
+        public const bool Borderless = false;
         public const string Grid = "BBBB" +
                                    "B  B" +
                                    "B  B" +
@@ -1229,7 +1286,7 @@ namespace ConsoleSnake {
                                    "BBBB";
     }
 
-        public class Modif {
+    public class Modif {
         public void Mod(int[] m) {
             m[0] = 11;
             m[1] = 22;
