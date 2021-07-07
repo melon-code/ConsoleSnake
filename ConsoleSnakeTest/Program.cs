@@ -734,16 +734,22 @@ namespace ConsoleSnake {
         const string errorString = "NULL";
         public const int OnTitleKey = 1;
         public const int OffTitleKey = 2;
-        public const int ExitStringKey = 3;
-        public const int HeightKey = 4;
-        public const int WidthKey = 5;
-        public const int BigFoodKey = 6;
-        public const int PortalBorderKey = 7;
-        public const int SpeedKey = 8;
-        public const int CustomFieldKey = 9;
-        public const int CustomFieldTypeKey = 10;
+        public const int InputNumberKey = 3;
+        public const int ExitStringKey = 4;
+        public const int HeightKey = 5;
+        public const int WidthKey = 6;
+        public const int BigFoodKey = 7;
+        public const int PortalBorderKey = 8;
+        public const int SpeedKey = 9;
+        public const int CustomFieldKey = 10;
+        public const int CustomFieldTypeKey = 11;
         public const int NewGameKey = 20;
         public const int SettingsKey = 21;
+        public const int SameRepeatKey = 22;
+        public const int ToMainMenuKey = 23;
+        public const int DisplaySnakeLengthKey = 25;
+        public const int WinKey = 30;
+        public const int GameOverKey = 31;
 
         readonly protected Dictionary<int, string> dictionary;
 
@@ -763,6 +769,7 @@ namespace ConsoleSnake {
     public class EngLangDictionary : LocalizationDictionary {
         const string onTitle = "On";
         const string offTitle = "Off";
+        const string inputNumber = "Input integer value: ";
         const string exitString = "Exit";
         const string height = "Height";
         const string width = "Width";
@@ -773,10 +780,16 @@ namespace ConsoleSnake {
         const string customFieldType = "Custom field type";
         const string newGame = "New Game";
         const string settings = "Settings";
+        const string sameRepeat = "Start again";
+        const string toMainMenu = "Go to Main Menu";
+        const string displaySnakeLength = "Snake length is ";
+        const string win = "Congratulations! You WON!";
+        const string gameOver = "GAME OVER Try fortune next time!";
 
         public EngLangDictionary() : base() {
             dictionary.Add(OnTitleKey, onTitle);
             dictionary.Add(OffTitleKey, offTitle);
+            dictionary.Add(InputNumberKey, inputNumber);
             dictionary.Add(ExitStringKey, exitString);
             dictionary.Add(HeightKey, height);
             dictionary.Add(WidthKey, width);
@@ -787,12 +800,18 @@ namespace ConsoleSnake {
             dictionary.Add(CustomFieldTypeKey, customFieldType);
             dictionary.Add(NewGameKey, newGame);
             dictionary.Add(SettingsKey, settings);
+            dictionary.Add(SameRepeatKey, sameRepeat);
+            dictionary.Add(ToMainMenuKey, toMainMenu);
+            dictionary.Add(DisplaySnakeLengthKey, displaySnakeLength);
+            dictionary.Add(WinKey, win);
+            dictionary.Add(GameOverKey, gameOver);
         }
     }
 
     public class RusLangDictionary : LocalizationDictionary {
         const string onTitle = "Да";
         const string offTitle = "Нет";
+        const string inputNumber = "Введите числовое значение: ";
         const string exitString = "Выход";
         const string height = "Высота";
         const string width = "Ширина";
@@ -803,10 +822,16 @@ namespace ConsoleSnake {
         const string customFieldType = "Тип пользовательского поля";
         const string newGame = "Новая игра";
         const string settings = "Настройки";
+        const string sameRepeat = "Повторить снова";
+        const string toMainMenu = "В главное меню";
+        const string displaySnakeLength = "Длина змейки: ";
+        const string win = "Победа!";
+        const string gameOver = "Вы проиграли, попробуйте снова!";
 
         public RusLangDictionary() : base() {
             dictionary.Add(OnTitleKey, onTitle);
             dictionary.Add(OffTitleKey, offTitle);
+            dictionary.Add(InputNumberKey, inputNumber);
             dictionary.Add(ExitStringKey, exitString);
             dictionary.Add(HeightKey, height);
             dictionary.Add(WidthKey, width);
@@ -817,6 +842,11 @@ namespace ConsoleSnake {
             dictionary.Add(CustomFieldTypeKey, customFieldType);
             dictionary.Add(NewGameKey, newGame);
             dictionary.Add(SettingsKey, settings);
+            dictionary.Add(SameRepeatKey, sameRepeat);
+            dictionary.Add(ToMainMenuKey, toMainMenu);
+            dictionary.Add(DisplaySnakeLengthKey, displaySnakeLength);
+            dictionary.Add(WinKey, win);
+            dictionary.Add(GameOverKey, gameOver);
         }
     }
 
@@ -825,6 +855,7 @@ namespace ConsoleSnake {
 
         public static string OnTitle => dictionary.GetItem(LocalizationDictionary.OnTitleKey);
         public static string OffTitle => dictionary.GetItem(LocalizationDictionary.OffTitleKey);
+        public static string InputNumber => dictionary.GetItem(LocalizationDictionary.InputNumberKey);
         public static string ExitString => dictionary.GetItem(LocalizationDictionary.ExitStringKey);
         public static string Height => dictionary.GetItem(LocalizationDictionary.HeightKey);
         public static string Width => dictionary.GetItem(LocalizationDictionary.WidthKey);
@@ -835,6 +866,11 @@ namespace ConsoleSnake {
         public static string CustomFieldType => dictionary.GetItem(LocalizationDictionary.CustomFieldTypeKey);
         public static string NewGame => dictionary.GetItem(LocalizationDictionary.NewGameKey);
         public static string Settings => dictionary.GetItem(LocalizationDictionary.SettingsKey);
+        public static string SameRepeat => dictionary.GetItem(LocalizationDictionary.SameRepeatKey);
+        public static string ToMainMenu => dictionary.GetItem(LocalizationDictionary.ToMainMenuKey);
+        public static string DisplaySnakeLength => dictionary.GetItem(LocalizationDictionary.DisplaySnakeLengthKey);
+        public static string Win => dictionary.GetItem(LocalizationDictionary.WinKey);
+        public static string GameOver => dictionary.GetItem(LocalizationDictionary.GameOverKey);
 
         public static void ChangeLanguage() {
             if (dictionary is RusLangDictionary)
@@ -1099,7 +1135,7 @@ namespace ConsoleSnake {
             string input;
             bool isInputValid = false;
             do {
-                Console.Write("\tВведите числовое значение: ");
+                Console.Write(Localization.InputNumber);
                 input = Console.ReadLine();
                 if (ValidateStringInput(input) && ValidateInteger(Convert.ToInt32(input)))
                     isInputValid = true;
@@ -1230,6 +1266,10 @@ namespace ConsoleSnake {
         public static IList<IMenuItem> GetMainMenuList() {
             return new IMenuItem[] { new MenuItem(Localization.NewGame), new MenuItem(Localization.Settings), new MenuItem(Localization.ExitString) };
         }
+
+        public static IList<IMenuItem> GetEndscreenMenuList() {
+            return new List<IMenuItem>() { new MenuItem(Localization.SameRepeat), new MenuItem(Localization.ToMainMenu) };
+        }
     }
 
     public class MainMenu : ConsoleMenu {
@@ -1288,7 +1328,7 @@ namespace ConsoleSnake {
         public SnakeGameStats GameResults { get; set; }
         public bool Restart { get; private set; } = false;
 
-        public EndscreenMenu() : base(new List<IMenuItem>() { new MenuItem("Еще раз (с теми же параметрами)"), new MenuItem("В начальное меню") }, "Выход") {
+        public EndscreenMenu() : base(ItemsListHelper.GetEndscreenMenuList(), Localization.ExitString) {
         }
 
         public override void ProcessInput(ConsoleKey input) {
@@ -1300,8 +1340,8 @@ namespace ConsoleSnake {
 
         protected override void Draw() {
             Console.Clear();
-            Console.WriteLine(string.Format("\t{0}!\n", GameResults.Win ? "You Won" : "GAME OVER"));
-            Console.WriteLine("\tSnake length is " + GameResults.SnakeLength + "\n");
+            Console.WriteLine(string.Format("\t{0}\n", GameResults.Win ? Localization.Win : Localization.GameOver));
+            Console.WriteLine(string.Format("\t{0}" + GameResults.SnakeLength + "\n", Localization.DisplaySnakeLength));
             DrawMenu();
         }
     }
