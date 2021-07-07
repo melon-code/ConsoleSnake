@@ -375,7 +375,7 @@ namespace ConsoleSnake {
         protected bool IsGameOver { get; set; } = false;
         public virtual bool Borderless => false;
         protected bool Win { get { return snake.Length == PlayableArea; } }
-        public bool PortalBorders => snake is PortalSnake; //???
+        public bool PortalBorders => snake is PortalSnake;
         public int SnakeLenght { get { return snake.Length; } }
         public int Height => Grid.Height;
         public int Width => Grid.Width;
@@ -531,7 +531,7 @@ namespace ConsoleSnake {
         public void SetConsoleWindow() {
             Console.Clear();
             Console.CursorVisible = false;
-            if (drawingField.Borderless) { // WTF
+            if (drawingField.Borderless) {
                 Console.WindowHeight = 1;
                 //Console.SetWindowSize(1, 1);
                 //var left = Console.WindowLeft;
@@ -730,6 +730,120 @@ namespace ConsoleSnake {
         }
     }
 
+    public class LocalizationDictionary {
+        const string errorString = "NULL";
+        public const int OnTitleKey = 1;
+        public const int OffTitleKey = 2;
+        public const int ExitStringKey = 3;
+        public const int HeightKey = 4;
+        public const int WidthKey = 5;
+        public const int BigFoodKey = 6;
+        public const int PortalBorderKey = 7;
+        public const int SpeedKey = 8;
+        public const int CustomFieldKey = 9;
+        public const int CustomFieldTypeKey = 10;
+        public const int NewGameKey = 20;
+        public const int SettingsKey = 21;
+
+        readonly protected Dictionary<int, string> dictionary;
+
+        public string this[int key] => GetItem(key); 
+
+        public LocalizationDictionary() {
+            dictionary = new Dictionary<int, string>();
+        }
+
+        public string GetItem(int key) {
+            if (dictionary.TryGetValue(key, out string value))
+                return value;
+            return errorString;
+        }
+    }
+
+    public class EngLangDictionary : LocalizationDictionary {
+        const string onTitle = "On";
+        const string offTitle = "Off";
+        const string exitString = "Exit";
+        const string height = "Height";
+        const string width = "Width";
+        const string bigFood = "Big food";
+        const string portalBorder = "Portal borders";
+        const string speed = "Speed";
+        const string customField = "Custom field";
+        const string customFieldType = "Custom field type";
+        const string newGame = "New Game";
+        const string settings = "Settings";
+
+        public EngLangDictionary() : base() {
+            dictionary.Add(OnTitleKey, onTitle);
+            dictionary.Add(OffTitleKey, offTitle);
+            dictionary.Add(ExitStringKey, exitString);
+            dictionary.Add(HeightKey, height);
+            dictionary.Add(WidthKey, width);
+            dictionary.Add(BigFoodKey, bigFood);
+            dictionary.Add(PortalBorderKey, portalBorder);
+            dictionary.Add(SpeedKey, speed);
+            dictionary.Add(CustomFieldKey, width);
+            dictionary.Add(CustomFieldTypeKey, customFieldType);
+            dictionary.Add(NewGameKey, newGame);
+            dictionary.Add(SettingsKey, settings);
+        }
+    }
+
+    public class RusLangDictionary : LocalizationDictionary {
+        const string onTitle = "Да";
+        const string offTitle = "Нет";
+        const string exitString = "Выход";
+        const string height = "Высота";
+        const string width = "Ширина";
+        const string bigFood = "Большая еда";
+        const string portalBorder = "Портальные границы";
+        const string speed = "Скорость";
+        const string customField = "Пользовательское поле";
+        const string customFieldType = "Тип пользовательского поля";
+        const string newGame = "Новая игра";
+        const string settings = "Настройки";
+
+        public RusLangDictionary() : base() {
+            dictionary.Add(OnTitleKey, onTitle);
+            dictionary.Add(OffTitleKey, offTitle);
+            dictionary.Add(ExitStringKey, exitString);
+            dictionary.Add(HeightKey, height);
+            dictionary.Add(WidthKey, width);
+            dictionary.Add(BigFoodKey, bigFood);
+            dictionary.Add(PortalBorderKey, portalBorder);
+            dictionary.Add(SpeedKey, speed);
+            dictionary.Add(CustomFieldKey, width);
+            dictionary.Add(CustomFieldTypeKey, customFieldType);
+            dictionary.Add(NewGameKey, newGame);
+            dictionary.Add(SettingsKey, settings);
+        }
+    }
+
+    public static class Localization {
+        static LocalizationDictionary dictionary = new RusLangDictionary();
+
+        public static string OnTitle => dictionary.GetItem(LocalizationDictionary.OnTitleKey);
+        public static string OffTitle => dictionary.GetItem(LocalizationDictionary.OffTitleKey);
+        public static string ExitString => dictionary.GetItem(LocalizationDictionary.ExitStringKey);
+        public static string Height => dictionary.GetItem(LocalizationDictionary.HeightKey);
+        public static string Width => dictionary.GetItem(LocalizationDictionary.WidthKey);
+        public static string BigFood => dictionary.GetItem(LocalizationDictionary.BigFoodKey);
+        public static string PortalBorders => dictionary.GetItem(LocalizationDictionary.PortalBorderKey);
+        public static string Speed => dictionary.GetItem(LocalizationDictionary.SpeedKey);
+        public static string CustomField => dictionary.GetItem(LocalizationDictionary.CustomFieldKey);
+        public static string CustomFieldType => dictionary.GetItem(LocalizationDictionary.CustomFieldTypeKey);
+        public static string NewGame => dictionary.GetItem(LocalizationDictionary.NewGameKey);
+        public static string Settings => dictionary.GetItem(LocalizationDictionary.SettingsKey);
+
+        public static void ChangeLanguage() {
+            if (dictionary is RusLangDictionary)
+                dictionary = new EngLangDictionary();
+            else
+                dictionary = new RusLangDictionary();
+        }
+    }
+
     public enum MenuEndResult {
         Further, Exit
     }
@@ -836,58 +950,64 @@ namespace ConsoleSnake {
 
         void Draw();
         void ProcessInput(ConsoleKey input);
+        void ChangeName(string newName);
     }
 
     public interface IMenuValueItem<T> : IMenuItem {
         T Value { get; }
     }
 
-    public class MenuItem : IMenuItem {
+    public abstract class MenuItemBase : IMenuItem {
         public bool Visible { get; set; } = true;
         public bool Interactive { get; set; } = true;
-        public string Name { get; }
+        public string Name { get; private set; }
 
-        public MenuItem(string name) {
+        protected MenuItemBase(string name) {
             Name = name;
         }
 
-        public void Draw() {
+        public void ChangeName(string newName) {
+            Name = newName;
+        }
+
+        public abstract void Draw();
+        public abstract void ProcessInput(ConsoleKey input);
+    }
+
+    public class MenuItem : MenuItemBase {
+        public MenuItem(string name) : base(name) {
+        }
+
+        public override void Draw() {
             Console.Write("\t" + Name + "\n\n");
         }
 
-        public void ProcessInput(ConsoleKey input) {
+        public override void ProcessInput(ConsoleKey input) {
             //mb add inside menus
         }
     }
 
-    public class ValueBasedItem<T> {
-        public bool Visible { get; set; } = true;
-        public bool Interactive { get; set; } = true;
-        public string Name { get; }
+    public abstract class ValueBasedItem<T> : MenuItemBase {
         public T Value { get; protected set; }
 
-        public ValueBasedItem(string name, T defaultValue) {
-            Name = name;
+        public ValueBasedItem(string name, T defaultValue) : base(name) {
             Value = defaultValue;
         }
     }
 
     public class BoolMenuItem : ValueBasedItem<bool>, IMenuValueItem<bool> {
-        const string onTitle = "Да";
-        const string offTitle = "Нет";
-
         public BoolMenuItem(string name, bool defaultValue) : base(name, defaultValue) {
         }
 
-        public void Draw() {
-            Console.WriteLine("\t" + Name + string.Format(" < {0} >", Value ? onTitle : offTitle) + "\n");
+        public override void Draw() {
+            Console.WriteLine("\t" + Name + string.Format(" < {0} >", Value ? Localization.OnTitle : Localization.OffTitle) + "\n");
         }
 
         public virtual void ChangeValue() {
             Value = !Value;
         }
 
-        public void ProcessInput(ConsoleKey input) {
+        public override void ProcessInput(ConsoleKey input) {
             if (input == ConsoleKey.Enter || input == ConsoleKey.LeftArrow || input == ConsoleKey.RightArrow)
                 ChangeValue();
         }
@@ -952,7 +1072,7 @@ namespace ConsoleSnake {
         }
 
 
-        public void Draw() {
+        public override void Draw() {
             Console.WriteLine("\t" + Name + string.Format(" < {0} >", Value) + "\n");
         }
 
@@ -986,7 +1106,7 @@ namespace ConsoleSnake {
             } while (!isInputValid);
         }
 
-        public void ProcessInput(ConsoleKey input) {
+        public override void ProcessInput(ConsoleKey input) {
             switch (input) {
                 case ConsoleKey.Enter:
                     InputValue();
@@ -1016,7 +1136,6 @@ namespace ConsoleSnake {
             }
         }
 
-        const string exitString = "Выход";
         const int heightIndex = 0;
         const int widthIndex = 1;
         const int bigFoodIndex = 2;
@@ -1025,6 +1144,7 @@ namespace ConsoleSnake {
         const int isCustomGridIndex = 5;
         const int customGridTypeIndex = 6;
 
+        public bool LanguageChanged { get; private set; } = false;
         public int Height => GetInt(heightIndex);
         public int Width => GetInt(widthIndex);
         public bool BigFood => GetBool(bigFoodIndex);
@@ -1039,7 +1159,7 @@ namespace ConsoleSnake {
             }
         }
 
-        public SettingsMenu(IList<IMenuItem> settingsItems) : base(settingsItems, exitString) {
+        public SettingsMenu(IList<IMenuItem> settingsItems) : base(settingsItems, Localization.ExitString) {
         }
 
         T GetValue<T, Type>(int index) where Type : IMenuValueItem<T> {
@@ -1055,6 +1175,13 @@ namespace ConsoleSnake {
 
         bool GetBool(int index) {
             return GetValue<bool, BoolMenuItem>(index);
+        }
+
+        public void UpdateNames() {
+            var updatedItems = ItemsListHelper.GetSettingsMenuList();
+            for (int i = 0; i < updatedItems.Count; i++)
+                Items[i].ChangeName(updatedItems[i].Name);
+            Items.Last().ChangeName(Localization.ExitString);
         }
 
         public override void ProcessInput(ConsoleKey input) {
@@ -1092,16 +1219,16 @@ namespace ConsoleSnake {
         const int maxSpeed = 10;
 
         public static IList<IMenuItem> GetSettingsMenuList() {
-            IntMenuItem customTypes = new IntMenuItem("Тип поля", 1, 1, 3);
+            IntMenuItem customTypes = new IntMenuItem(Localization.CustomFieldType, 1, 1, 3);
             IList<DependencyItem> dependencies = new List<DependencyItem>() { new DependencyItem(customTypes) };
-            return new List<IMenuItem> { new IntMenuItem("Высота", defaultHeight, minHeight, Console.LargestWindowHeight),
-                new IntMenuItem("Ширина", defaultWidth, minWidth, Console.LargestWindowWidth), new BoolMenuItem("Большая еда (не робiт)", false),
-                new BoolMenuItem("Портальные границы", false), new IntMenuItem("Скорость", defaultSpeed, minSpeed, maxSpeed),
-                new DependencyBoolMenuItem("Пользовательское поле", false, dependencies), customTypes };
+            return new List<IMenuItem> { new IntMenuItem(Localization.Height, defaultHeight, minHeight, Console.LargestWindowHeight),
+                new IntMenuItem(Localization.Width, defaultWidth, minWidth, Console.LargestWindowWidth), new BoolMenuItem(Localization.BigFood, false),
+                new BoolMenuItem(Localization.PortalBorders, false), new IntMenuItem(Localization.Speed, defaultSpeed, minSpeed, maxSpeed),
+                new DependencyBoolMenuItem(Localization.CustomField, false, dependencies), customTypes };
         }
 
         public static IList<IMenuItem> GetMainMenuList() {
-            return new IMenuItem[] { new MenuItem("Новая игра"), new MenuItem("Настройки"), new MenuItem("Выход") };
+            return new IMenuItem[] { new MenuItem(Localization.NewGame), new MenuItem(Localization.Settings), new MenuItem(Localization.ExitString) };
         }
     }
 
@@ -1112,6 +1239,12 @@ namespace ConsoleSnake {
 
         public MainMenu() : base(ItemsListHelper.GetMainMenuList()) {
             sMenu = new SettingsMenu(ItemsListHelper.GetSettingsMenuList());
+        }
+
+        void UpdateNames() {
+            var updatedItems = ItemsListHelper.GetMainMenuList();
+            for (int i = 0; i < Items.Count; i++)
+                Items[i].ChangeName(updatedItems[i].Name);
         }
 
         public override void ProcessInput(ConsoleKey input) {
@@ -1128,6 +1261,16 @@ namespace ConsoleSnake {
                     IsEnd = true;
                 }
             }
+            if (input == ConsoleKey.L) {
+                Localization.ChangeLanguage();
+                UpdateNames();
+                sMenu.UpdateNames();
+            }
+        }
+
+        protected override void Draw() {
+            base.Draw();
+            Console.WriteLine("\n\tChange languege -> L");
         }
     }
 
@@ -1205,7 +1348,7 @@ namespace ConsoleSnake {
         }
     }
 
-    public struct CustomGameGrid { //watch borderless
+    public struct CustomGameGrid {
         public GameGrid Grid { get; }
         public int SnakeHeadX { get; }
         public int SnakeHeadY { get; }
