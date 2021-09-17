@@ -48,11 +48,61 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConsoleGameProcessor.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\BoolMenuItem.cs" />
+    <Compile Include="ConsoleMenu\ConsoleMenu.cs" />
+    <Compile Include="ConsoleSnakeGame.cs" />
+    <Compile Include="ConsoleSnakeDrawer.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\DependencyBoolMenuItem.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\DependencyItem.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\IMenuItem.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\IMenuValueItem.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\IntMenuItem.cs" />
+    <Compile Include="ConsoleMenu\EndscreenMenu.cs" />
+    <Compile Include="ConsoleMenu\ItemsListHelper.cs" />
+    <Compile Include="CustomGameGrid\CustomGameGrid.cs" />
+    <Compile Include="CustomGameGrid\CustomGameGridParser.cs" />
+    <Compile Include="CustomGameGrid\Types\CustomGameGridTypeA.cs" />
+    <Compile Include="CustomGameGrid\Types\CustomGameGridTypeB.cs" />
+    <Compile Include="CustomGameGrid\Types\CustomGameGridTypeC.cs" />
+    <Compile Include="CustomGameGrid\CustomGameGridTypes.cs" />
+    <Compile Include="Localization\LocalizationDictionary\EngLangDictionary.cs" />
+    <Compile Include="Fields\BorderlessField.cs" />
+    <Compile Include="Fields\Field.cs" />
+    <Compile Include="GameGrid.cs" />
+    <Compile Include="GameState.cs" />
+    <Compile Include="Items\BorderItem.cs" />
+    <Compile Include="CollisionType.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="Items\EmptyItem.cs" />
+    <Compile Include="Items\FieldItem.cs" />
+    <Compile Include="FieldItemType.cs" />
+    <Compile Include="Items\FoodItem.cs" />
+    <Compile Include="Localization\Localization.cs" />
+    <Compile Include="Localization\LocalizationDictionary\LocalizationDictionary.cs" />
+    <Compile Include="ConsoleMenu\MenuEndResult.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\MenuItem.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\MenuItemBase.cs" />
+    <Compile Include="ConsoleMenu\MainMenu.cs" />
+    <Compile Include="Points\Point.cs" />
+    <Compile Include="Points\PortalSnakePoint.cs" />
+    <Compile Include="Renderer.cs" />
+    <Compile Include="Localization\LocalizationDictionary\RusLangDictionary.cs" />
+    <Compile Include="ConsoleMenu\SettingsMenu.cs" />
+    <Compile Include="ConsoleMenu\SettingsResult.cs" />
+    <Compile Include="ConsoleMenu\SnakeGameStats.cs" />
+    <Compile Include="Snakes\PortalSnake.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Items\SnakeItem.cs" />
+    <Compile Include="Points\SnakePoint.cs" />
+    <Compile Include="Snakes\Snake.cs" />
+    <Compile Include="SnakeType.cs" />
+    <Compile Include="ConsoleMenu\MenuItems\ValueBasedItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
