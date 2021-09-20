@@ -5,8 +5,8 @@ namespace ConsoleSnake {
     public abstract class ConsoleMenu {
         readonly bool hasExitItem = false;
 
-        bool IsExitSelected { get { return hasExitItem && CurrentPosition == ItemCount - 1; } }
-        int ItemCount { get { return Items.Count; } }
+        bool IsExitSelected { get { return hasExitItem && CurrentPosition == ItemsCount - 1; } }
+        int ItemsCount { get { return Items.Count; } }
         protected IList<IMenuItem> Items { get; }
         protected bool IsEnd { get; set; }
         protected int CurrentPosition { get; private set; } = 0;
@@ -22,6 +22,13 @@ namespace ConsoleSnake {
             hasExitItem = true;
         }
 
+        public void UpdateItemsNames(IList<string> updatedNames) {
+            for (int i = 0; i < updatedNames.Count; i++)
+                Items[i].ChangeName(updatedNames[i]);
+            if (hasExitItem)
+                Items[ItemsCount - 1].ChangeName(Localization.ExitString);
+        }
+
         public MenuEndResult ShowDialog() {
             IsEnd = false;
             EndResult = MenuEndResult.Further;
@@ -34,7 +41,7 @@ namespace ConsoleSnake {
         }
 
         public void DrawMenu() {
-            for (int i = 0; i < ItemCount; i++) {
+            for (int i = 0; i < ItemsCount; i++) {
                 if (i == CurrentPosition)
                     Console.Write("\t---> ");
                 if (Items[i].Visible)
@@ -50,10 +57,10 @@ namespace ConsoleSnake {
         void ChangeCurrentPosition(bool increase) {
             int iterations = 0;
             do {
-                CurrentPosition = increase ? CurrentPosition + 1 : ItemCount + CurrentPosition - 1;
-                CurrentPosition %= ItemCount;
+                CurrentPosition = increase ? CurrentPosition + 1 : ItemsCount + CurrentPosition - 1;
+                CurrentPosition %= ItemsCount;
                 iterations++;
-            } while (iterations != ItemCount && !CurrentItem.Visible);
+            } while (iterations != ItemsCount && !CurrentItem.Visible);
         }
 
         void IncreaseCurrentPosition() {

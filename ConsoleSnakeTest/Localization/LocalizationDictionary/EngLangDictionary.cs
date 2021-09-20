@@ -18,6 +18,7 @@
         const string displaySnakeLength = "Snake length is ";
         const string win = "Congratulations! You WON!";
         const string gameOver = "GAME OVER Try fortune next time!";
+        const string changeLanguage = "Change language";
 
         public EngLangDictionary() : base() {
             dictionary.Add(OnTitleKey, onTitle);
@@ -29,7 +30,7 @@
             dictionary.Add(BigFoodKey, bigFood);
             dictionary.Add(PortalBorderKey, portalBorder);
             dictionary.Add(SpeedKey, speed);
-            dictionary.Add(CustomFieldKey, width);
+            dictionary.Add(CustomFieldKey, customField);
             dictionary.Add(CustomFieldTypeKey, customFieldType);
             dictionary.Add(NewGameKey, newGame);
             dictionary.Add(SettingsKey, settings);
@@ -38,6 +39,7 @@
             dictionary.Add(DisplaySnakeLengthKey, displaySnakeLength);
             dictionary.Add(WinKey, win);
             dictionary.Add(GameOverKey, gameOver);
+            dictionary.Add(ChangeLanguageKey, changeLanguage);
         }
     }
 }

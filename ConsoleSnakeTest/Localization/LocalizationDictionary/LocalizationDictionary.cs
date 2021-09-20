@@ -21,6 +21,7 @@ namespace ConsoleSnake {
         public const int DisplaySnakeLengthKey = 25;
         public const int WinKey = 30;
         public const int GameOverKey = 31;
+        public const int ChangeLanguageKey = 40;
 
         readonly protected Dictionary<int, string> dictionary;
 

@@ -24,6 +24,15 @@ namespace ConsoleSnake {
             return new IMenuItem[] { new MenuItem(Localization.NewGame), new MenuItem(Localization.Settings), new MenuItem(Localization.ExitString) };
         }
 
+        public static IList<string> GetSettingsMenuNames() {
+            return new List<string> { Localization.Height, Localization.Width, Localization.BigFood, Localization.PortalBorders, Localization.Speed,
+                Localization.CustomField, Localization.CustomFieldType };
+        }
+
+        public static IList<string> GetMainMenuNames() {
+            return new List<string> { Localization.NewGame, Localization.Settings, Localization.ExitString };
+        }
+
         public static IList<IMenuItem> GetEndscreenMenuList() {
             return new List<IMenuItem>() { new MenuItem(Localization.SameRepeat), new MenuItem(Localization.ToMainMenu) };
         }

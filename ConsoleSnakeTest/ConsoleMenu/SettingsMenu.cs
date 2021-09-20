@@ -58,13 +58,6 @@ namespace ConsoleSnake {
             return GetValue<bool, BoolMenuItem>(index);
         }
 
-        public void UpdateNames() {
-            var updatedItems = ItemsListHelper.GetSettingsMenuList();
-            for (int i = 0; i < updatedItems.Count; i++)
-                Items[i].ChangeName(updatedItems[i].Name);
-            Items.Last().ChangeName(Localization.ExitString);
-        }
-
         public override void ProcessInput(ConsoleKey input) {
             CurrentItem.ProcessInput(input);
         }

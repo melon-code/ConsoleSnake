@@ -10,12 +10,6 @@ namespace ConsoleSnake {
             sMenu = new SettingsMenu(ItemsListHelper.GetSettingsMenuList());
         }
 
-        void UpdateNames() {
-            var updatedItems = ItemsListHelper.GetMainMenuList();
-            for (int i = 0; i < Items.Count; i++)
-                Items[i].ChangeName(updatedItems[i].Name);
-        }
-
         public override void ProcessInput(ConsoleKey input) {
             if (input == ConsoleKey.Enter) {
                 if (CurrentPosition == 0) {
@@ -30,16 +24,16 @@ namespace ConsoleSnake {
                     IsEnd = true;
                 }
             }
-            if (input == ConsoleKey.L) {
+            if (input == ConsoleKey.Tab) {
                 Localization.ChangeLanguage();
-                UpdateNames();
-                sMenu.UpdateNames();
+                UpdateItemsNames(ItemsListHelper.GetMainMenuNames());
+                sMenu.UpdateItemsNames(ItemsListHelper.GetSettingsMenuNames());
             }
         }
 
         protected override void Draw() {
             base.Draw();
-            Console.WriteLine("\n\tChange languege -> L");
+            Console.WriteLine(string.Format("\n\t{0} -> Tab", Localization.ChangeLanguageString));
         }
     }
 }

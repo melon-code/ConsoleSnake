@@ -20,6 +20,7 @@
         public static string DisplaySnakeLength => dictionary.GetItem(LocalizationDictionary.DisplaySnakeLengthKey);
         public static string Win => dictionary.GetItem(LocalizationDictionary.WinKey);
         public static string GameOver => dictionary.GetItem(LocalizationDictionary.GameOverKey);
+        public static string ChangeLanguageString => dictionary.GetItem(LocalizationDictionary.ChangeLanguageKey);
 
         public static void ChangeLanguage() {
             if (dictionary is RusLangDictionary)
