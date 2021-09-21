@@ -6,10 +6,17 @@
         protected override int PlayableArea => Height * Width;
         public override bool Borderless => true;
 
-        public BorderlessField(int h, int w, bool allowPortalBorders) : base(h, w, allowPortalBorders) {
+
+        public BorderlessField(int height, int width, bool allowPortalBorders, bool enableBigFood) : base(height, width, allowPortalBorders, enableBigFood) {
         }
 
-        public BorderlessField(int h, int w) : this(h, w, false) {
+        public BorderlessField(int height, int width, bool allowPortalBorders, int bigFoodInterval) : base(height, width, allowPortalBorders, bigFoodInterval) {
+        }
+
+        public BorderlessField(int height, int width, bool allowPortalBorders) : base(height, width, allowPortalBorders) {
+        }
+
+        public BorderlessField(int height, int width) : this(height, width, false) {
         }
 
         public BorderlessField(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection, bool allowPortalBorders)

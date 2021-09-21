@@ -6,8 +6,16 @@ namespace ConsoleSnake {
             return new Field(height, width);
         }
 
+        public static Field CreateField(int height, int width, bool borderless, bool allowPortalBorders, bool enableBigFood) {
+            return borderless ? new BorderlessField(height, width, allowPortalBorders, enableBigFood) : new Field(height, width, allowPortalBorders, enableBigFood);
+        }
+
+        public static Field CreateField(int height, int width, bool borderless, bool allowPortalBorders, int bigFoodInterval) {
+            return borderless ? new BorderlessField(height, width, allowPortalBorders, bigFoodInterval) : new Field(height, width, allowPortalBorders, bigFoodInterval);
+        }
+
         public static Field CreateField(int height, int width, bool borderless, bool allowPortalBorders) {
-            return borderless ? new BorderlessField(height, width, allowPortalBorders) : new Field(height, width, allowPortalBorders);
+            return CreateField(height, width, allowPortalBorders, false);
         }
 
         public static Field CreateField(int height, int width, bool borderless) {
@@ -19,11 +27,23 @@ namespace ConsoleSnake {
                 : new Field(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders);
         }
 
+        public static int GetFoodValue(FieldItem item) {
+            if (item is FoodItem food)
+                return food.Value;
+            return 0;
+        }
+
         const string cggExceptionParamName = "Grid";
         const string cggExceptionMessage = "CustomGameGrid can not be null";
         const int smallFoodValue = 1;
+        const int bigFoodValue = 3;
         const int borderWidth = 1;
+        const int defaultBigFoodInterval = 10;
 
+        readonly int bigFoodInterval = defaultBigFoodInterval;
+        readonly bool bigFoodEnabled;
+        bool bigFoodSpawned = false;
+        int currentBigFoodInterval;
         protected Snake snake;
         Random rand;
         Direction currentlySetDirection = Direction.Right;
@@ -51,17 +71,21 @@ namespace ConsoleSnake {
             }
         }
 
-        public Field(int height, int width, bool allowPortalBorders) {
+        public Field(int height, int width, bool allowPortalBorders, bool enableBigFood) {
             Grid = new GameGrid(height, width, Borderless);
             snake = allowPortalBorders ? new PortalSnake(Height / 2, Width / 2, LimitX, LimitY, BorderWidth) : new Snake(Height / 2, Width / 2);
+            bigFoodEnabled = enableBigFood;
             PrepareForStart();
         }
 
-        public Field(int height, int width) : this(height, width, false) {
+        public Field(int height, int width, bool allowPortalBorders, int bigFoodInterval) : this(height, width, allowPortalBorders, true) {
+            this.bigFoodInterval = bigFoodInterval;
         }
 
-        public Field(int h, int w, int startLength) : this(h, w) {
-            //todo
+        public Field(int height, int width, bool allowPortalBorders) : this(height, width, allowPortalBorders, false) {
+        }
+
+        public Field(int height, int width) : this(height, width, false) {
         }
 
         public Field(GameGrid customGameGrid, int initialSnakeHeadX, int initialSnakeHeadY, Direction initialSnakeDirection, bool allowPortalBorders) {
@@ -74,7 +98,9 @@ namespace ConsoleSnake {
         void PrepareForStart() {
             Grid.SetNewSnakeHead(snake.Head);
             rand = new Random();
-            GenerateFood();
+            GenerateSmallFood();
+            if (bigFoodEnabled)
+                currentBigFoodInterval = bigFoodInterval;
         }
 
         protected CollisionType IsCollision(int headX, int headY) {
@@ -99,24 +125,37 @@ namespace ConsoleSnake {
             return false;
         }
 
-        void MoveSnakeHead() {
+        void MoveSnake() {
             snake.Move();
             Grid.SetNewSnakeHead(snake.Head);
-        }
-
-        void MoveSnake() {
-            MoveSnakeHead();
             Grid.RemoveSnakeTail(snake.Tail);
         }
 
-        void MoveAndExtendSnake() {
-            snake.NeedExtend = true;
-            MoveSnakeHead();
+        void MoveAndExtendSnake(int extendValue) {
+            snake.Move(extendValue);
+            Grid.SetNewSnakeHead(snake.Head);
         }
 
         protected virtual void ProcessBorderCollision() {
             MoveSnake();
             IsGameOver = true;
+        }
+
+        void ProcessFoodCollision(int foodValue) {
+            if (foodValue == smallFoodValue) {
+                GenerateSmallFood();
+                if (bigFoodEnabled && !bigFoodSpawned) {
+                    currentBigFoodInterval--;
+                    if (currentBigFoodInterval == 0) {
+                        GenerateBigFood();
+                        bigFoodSpawned = true;
+                    }
+                }
+            }
+            else {
+                currentBigFoodInterval = bigFoodInterval;
+                bigFoodSpawned = false;
+            }
         }
 
         public void Iterate() {
@@ -127,8 +166,9 @@ namespace ConsoleSnake {
                     MoveSnake();
                     break;
                 case CollisionType.Food:
-                    MoveAndExtendSnake();
-                    GenerateFood();
+                    int foodValue = GetFoodValue(Grid[nextHead.X, nextHead.Y]);
+                    MoveAndExtendSnake(foodValue);
+                    ProcessFoodCollision(foodValue);
                     break;
                 case CollisionType.Snake:
                 case CollisionType.Border:
@@ -137,15 +177,23 @@ namespace ConsoleSnake {
             }
         }
 
-        public void GenerateFood() {
+        public void GenerateFood(int foodValue) {
             if (snake.Length < PlayableArea) {
                 int x, y;
                 do {
                     x = rand.Next(Height);
                     y = rand.Next(Width);
                 } while (Grid[x, y].Type != FieldItemType.Empty);
-                Grid.AddFood(new Point(x, y), smallFoodValue);
+                Grid.AddFood(new Point(x, y), foodValue);
             }
+        }
+
+        public void GenerateSmallFood() {
+            GenerateFood(smallFoodValue);
+        }
+
+        public void GenerateBigFood() {
+            GenerateFood(bigFoodValue);
         }
     }
 }

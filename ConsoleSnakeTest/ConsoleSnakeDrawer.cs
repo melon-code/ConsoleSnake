@@ -84,14 +84,13 @@ namespace ConsoleSnake {
             if (item != null) {
                 switch (item.Type) {
                     case FieldItemType.Snake:
-                        //Console.Write("#");
                         Console.Write(DrawSnakeItem(item.GetSnakeItem()));
                         break;
                     case FieldItemType.Border:
                         Console.Write("B");
                         break;
                     case FieldItemType.Food:
-                        Console.Write("o");
+                        Console.Write(Field.GetFoodValue(item) == 1 ? "o" : "O");
                         break;
                     default:
                         Console.Write(" ");
@@ -104,9 +103,8 @@ namespace ConsoleSnake {
 
         public void DrawGameField() {
             for (int i = 0; i < drawingField.Height; i++) {
-                for (int j = 0; j < drawingField.Width; j++) {
+                for (int j = 0; j < drawingField.Width; j++) 
                     DrawItem(drawingField.Grid[i, j]);
-                }
                 Console.WriteLine();
             }
             Console.SetCursorPosition(0, 0);

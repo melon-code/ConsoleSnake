@@ -20,7 +20,15 @@ namespace ConsoleSnake {
             drawer = new ConsoleSnakeDrawer(gameField);
         }
 
-        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, int speed) : this(speed, () => Field.CreateField(height, width, borderless, portalBorders)) {
+        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, bool enableBigFood, int speed) : 
+            this(speed, () => Field.CreateField(height, width, borderless, portalBorders, enableBigFood)) {
+        }
+
+        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, int bigFoodInterval, int speed) :
+            this(speed, () => Field.CreateField(height, width, borderless, portalBorders, bigFoodInterval)) {
+        }
+
+        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, int speed) : this(height, width, borderless, portalBorders, false, defaultSnakeSpeed) {
         }
 
         public ConsoleSnakeGame(int height, int width) : this(height, width, false, false, defaultSnakeSpeed) {

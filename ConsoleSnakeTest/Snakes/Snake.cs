@@ -24,9 +24,10 @@ namespace ConsoleSnake {
             return false;
         }
 
+        int currentExtends = 0;
         protected LinkedList<SnakePoint> snake;
 
-        public bool NeedExtend { get; set; } = false;
+        bool IsExtending => currentExtends > 0;
         public int Length { get { return snake.Count; } }
         public SnakePoint Head { get { return HeadNode.Value; } }
         public SnakePoint Tail { get { return TailNode.Value; } }
@@ -57,10 +58,15 @@ namespace ConsoleSnake {
 
         public void Move() {
             snake.AddFirst(Head.GetPointAfterMove());
-            if (NeedExtend)
-                NeedExtend = false;
+            if (IsExtending)
+                currentExtends--;
             else
                 snake.RemoveLast();
+        }
+
+        public void Move(int ateFoodValue) {
+            currentExtends += ateFoodValue;
+            Move();
         }
     }
 }

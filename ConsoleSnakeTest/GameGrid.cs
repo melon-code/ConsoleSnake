@@ -74,10 +74,12 @@ namespace ConsoleSnake {
         }
 
         public void RemoveSnakeTail(Point newTail) {
-            GetSnakeItem(newTail).BecomeTail();
-            if (GetSnakeItem(tailCoordinates).BodyPart != SnakeType.Head)
-                AddNewItem(tailCoordinates, new EmptyItem());
-            tailCoordinates = newTail;
+            if (newTail.X != tailCoordinates.X || newTail.Y != tailCoordinates.Y) {
+                GetSnakeItem(newTail).BecomeTail();
+                if (GetSnakeItem(tailCoordinates).BodyPart != SnakeType.Head)
+                    AddNewItem(tailCoordinates, new EmptyItem());
+                tailCoordinates = newTail;
+            }
         }
 
         public void AddFood(Point food, int value) {
