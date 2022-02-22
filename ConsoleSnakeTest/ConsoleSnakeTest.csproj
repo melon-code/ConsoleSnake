@@ -70,13 +70,13 @@
     <Compile Include="Fields\BorderlessField.cs" />
     <Compile Include="Fields\Field.cs" />
     <Compile Include="GameGrid.cs" />
-    <Compile Include="GameState.cs" />
+    <Compile Include="Enums\GameState.cs" />
     <Compile Include="Items\BorderItem.cs" />
-    <Compile Include="CollisionType.cs" />
-    <Compile Include="Direction.cs" />
+    <Compile Include="Enums\CollisionType.cs" />
+    <Compile Include="Enums\Direction.cs" />
     <Compile Include="Items\EmptyItem.cs" />
     <Compile Include="Items\FieldItem.cs" />
-    <Compile Include="FieldItemType.cs" />
+    <Compile Include="Enums\FieldItemType.cs" />
     <Compile Include="Items\FoodItem.cs" />
     <Compile Include="Localization\Localization.cs" />
     <Compile Include="Localization\LocalizationDictionary\LocalizationDictionary.cs" />
@@ -97,7 +97,7 @@
     <Compile Include="Items\SnakeItem.cs" />
     <Compile Include="Points\SnakePoint.cs" />
     <Compile Include="Snakes\Snake.cs" />
-    <Compile Include="SnakeType.cs" />
+    <Compile Include="Enums\SnakeType.cs" />
     <Compile Include="ConsoleMenu\MenuItems\ValueBasedItem.cs" />
   </ItemGroup>
   <ItemGroup>

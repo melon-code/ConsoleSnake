@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 namespace ConsoleSnake {
     public abstract class ConsoleMenu {
+        const string cursorMenuString = "\t---> ";
+
         readonly bool hasExitItem = false;
 
         bool IsExitSelected { get { return hasExitItem && CurrentPosition == ItemsCount - 1; } }
@@ -43,7 +45,7 @@ namespace ConsoleSnake {
         public void DrawMenu() {
             for (int i = 0; i < ItemsCount; i++) {
                 if (i == CurrentPosition)
-                    Console.Write("\t---> ");
+                    Console.Write(cursorMenuString);
                 if (Items[i].Visible)
                     Items[i].Draw();
             }
