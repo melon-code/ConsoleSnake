@@ -10,7 +10,7 @@ namespace ConsoleSnake {
         }
 
         protected override void Draw() {
-            Console.Clear();
+            ConsoleMenuDrawer.SetCursorToLeftTopCorner();
             Console.WriteLine(string.Format("\t{0}\n", GameResults.Win ? SnakeLocalization.Win : SnakeLocalization.GameOver));
             Console.WriteLine(string.Format("\t{0}" + GameResults.SnakeLength + "\n", SnakeLocalization.DisplaySnakeLength));
             DrawMenu();

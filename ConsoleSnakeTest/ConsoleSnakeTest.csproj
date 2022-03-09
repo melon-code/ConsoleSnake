@@ -62,7 +62,6 @@
     <Compile Include="CustomGameGrid\Types\CustomGameGridTypeB.cs" />
     <Compile Include="CustomGameGrid\Types\CustomGameGridTypeC.cs" />
     <Compile Include="CustomGameGrid\CustomGameGridTypes.cs" />
-    <Compile Include="Localization\LocalizationDictionary\EngLangDictionary.cs" />
     <Compile Include="Fields\BorderlessField.cs" />
     <Compile Include="Fields\Field.cs" />
     <Compile Include="GameGrid.cs" />
@@ -74,12 +73,13 @@
     <Compile Include="Items\FieldItem.cs" />
     <Compile Include="Enums\FieldItemType.cs" />
     <Compile Include="Items\FoodItem.cs" />
-    <Compile Include="Localization\Localization.cs" />
     <Compile Include="ConsoleMenu\MainMenu.cs" />
+    <Compile Include="Localization\LocalizationDictionary\SnakeEngDictionary.cs" />
+    <Compile Include="Localization\LocalizationDictionary\SnakeRusDictionary.cs" />
+    <Compile Include="Localization\SnakeLocalization.cs" />
     <Compile Include="Points\Point.cs" />
     <Compile Include="Points\PortalSnakePoint.cs" />
     <Compile Include="Renderer.cs" />
-    <Compile Include="Localization\LocalizationDictionary\RusLangDictionary.cs" />
     <Compile Include="ConsoleMenu\SettingsMenu.cs" />
     <Compile Include="ConsoleMenu\SettingsResult.cs" />
     <Compile Include="ConsoleMenu\SnakeGameStats.cs" />
