@@ -1,32 +1,47 @@
-﻿namespace ConsoleSnake {
-    public static class Localization {
-        static LocalizationDictionary dictionary = new RusLangDictionary();
+﻿using ConsoleMenuAPI;
 
-        public static string OnTitle => dictionary.GetItem(LocalizationDictionary.OnTitleKey);
-        public static string OffTitle => dictionary.GetItem(LocalizationDictionary.OffTitleKey);
-        public static string InputNumber => dictionary.GetItem(LocalizationDictionary.InputNumberKey);
-        public static string ExitString => dictionary.GetItem(LocalizationDictionary.ExitStringKey);
-        public static string Height => dictionary.GetItem(LocalizationDictionary.HeightKey);
-        public static string Width => dictionary.GetItem(LocalizationDictionary.WidthKey);
-        public static string BigFood => dictionary.GetItem(LocalizationDictionary.BigFoodKey);
-        public static string PortalBorders => dictionary.GetItem(LocalizationDictionary.PortalBorderKey);
-        public static string Speed => dictionary.GetItem(LocalizationDictionary.SpeedKey);
-        public static string CustomField => dictionary.GetItem(LocalizationDictionary.CustomFieldKey);
-        public static string CustomFieldType => dictionary.GetItem(LocalizationDictionary.CustomFieldTypeKey);
-        public static string NewGame => dictionary.GetItem(LocalizationDictionary.NewGameKey);
-        public static string Settings => dictionary.GetItem(LocalizationDictionary.SettingsKey);
-        public static string SameRepeat => dictionary.GetItem(LocalizationDictionary.SameRepeatKey);
-        public static string ToMainMenu => dictionary.GetItem(LocalizationDictionary.ToMainMenuKey);
-        public static string DisplaySnakeLength => dictionary.GetItem(LocalizationDictionary.DisplaySnakeLengthKey);
-        public static string Win => dictionary.GetItem(LocalizationDictionary.WinKey);
-        public static string GameOver => dictionary.GetItem(LocalizationDictionary.GameOverKey);
-        public static string ChangeLanguageString => dictionary.GetItem(LocalizationDictionary.ChangeLanguageKey);
+namespace ConsoleSnake {
+    public static class SnakeLocalization {
+        public const int ExitStringKey = LocalizationDictionary.ExitStringKey;
+        public const int HeightKey = 5;
+        public const int WidthKey = 6;
+        public const int BigFoodKey = 7;
+        public const int PortalBorderKey = 8;
+        public const int SpeedKey = 9;
+        public const int CustomFieldKey = 10;
+        public const int CustomFieldTypeKey = 11;
+        public const int NewGameKey = 20;
+        public const int SettingsKey = 21;
+        public const int SameRepeatKey = 22;
+        public const int ToMainMenuKey = 23;
+        public const int DisplaySnakeLengthKey = 25;
+        public const int WinKey = 30;
+        public const int GameOverKey = 31;
+        public const int ChangeLanguageKey = 40;
+
+        static bool IsRusSelected { get; set; } = true;
+        public static string DisplaySnakeLength => Localization.GetString(DisplaySnakeLengthKey);
+        public static string Win => Localization.GetString(WinKey);
+        public static string GameOver => Localization.GetString(GameOverKey);
+        public static string ChangeLanguageString => Localization.GetString(ChangeLanguageKey);
+
+        static LocalizationDictionary GetNextDictionary() {
+            if (IsRusSelected)
+                return new SnakeEngDictionary();
+            return new SnakeRusDictionary();
+        }
+
+        static void ChangeLanguage(LocalizationDictionary dictionary) {
+            Localization.ChangeLanguage(dictionary);
+        }
+
+        public static void SetRusLocalizationDictionary() {
+            ChangeLanguage(new SnakeRusDictionary());
+        }
 
         public static void ChangeLanguage() {
-            if (dictionary is RusLangDictionary)
-                dictionary = new EngLangDictionary();
-            else
-                dictionary = new RusLangDictionary();
+            ChangeLanguage(GetNextDictionary());
+            IsRusSelected ^= true;
         }
     }
 }

@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ConsoleMenuAPI;
 
 namespace ConsoleSnake {
-    public class SettingsMenu : ConsoleMenu {
+    public class SettingsMenu : StandardConsoleMenu {
         public static CustomGameGrid GetCustomGrid(int type) {
             switch (type) {
                 case 1:
@@ -40,26 +41,7 @@ namespace ConsoleSnake {
             }
         }
 
-        public SettingsMenu(IList<IMenuItem> settingsItems) : base(settingsItems, Localization.ExitString) {
-        }
-
-        T GetValue<T, Type>(int index) where Type : IMenuValueItem<T> {
-            var item = Items[index];
-            if (item is Type)
-                return ((Type)item).Value;
-            throw new ArgumentException();
-        }
-
-        int GetInt(int index) {
-            return GetValue<int, IntMenuItem>(index);
-        }
-
-        bool GetBool(int index) {
-            return GetValue<bool, BoolMenuItem>(index);
-        }
-
-        public override void ProcessInput(ConsoleKey input) {
-            CurrentItem.ProcessInput(input);
+        public SettingsMenu(IList<IMenuItem> settingsItems) : base(settingsItems, SnakeLocalization.ExitStringKey) {
         }
     }
 }

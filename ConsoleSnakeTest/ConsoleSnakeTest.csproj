@@ -33,6 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ConsoleMenuAPI">
+      <HintPath>..\..\ConsoleMenuAPI\ConsoleMenuAPI\bin\Debug\ConsoleMenuAPI.dll</HintPath>
+    </Reference>
     <Reference Include="KeystrokeAPI, Version=1.0.6.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\KeystrokeAPI_fixed\KeystrokeAPI.dll</HintPath>
@@ -49,15 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConsoleGameProcessor.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\BoolMenuItem.cs" />
-    <Compile Include="ConsoleMenu\ConsoleMenu.cs" />
     <Compile Include="ConsoleSnakeGame.cs" />
     <Compile Include="ConsoleSnakeDrawer.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\DependencyBoolMenuItem.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\DependencyItem.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\IMenuItem.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\IMenuValueItem.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\IntMenuItem.cs" />
     <Compile Include="ConsoleMenu\EndscreenMenu.cs" />
     <Compile Include="ConsoleMenu\ItemsListHelper.cs" />
     <Compile Include="CustomGameGrid\CustomGameGrid.cs" />
@@ -79,10 +75,6 @@
     <Compile Include="Enums\FieldItemType.cs" />
     <Compile Include="Items\FoodItem.cs" />
     <Compile Include="Localization\Localization.cs" />
-    <Compile Include="Localization\LocalizationDictionary\LocalizationDictionary.cs" />
-    <Compile Include="ConsoleMenu\MenuEndResult.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\MenuItem.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\MenuItemBase.cs" />
     <Compile Include="ConsoleMenu\MainMenu.cs" />
     <Compile Include="Points\Point.cs" />
     <Compile Include="Points\PortalSnakePoint.cs" />
@@ -98,7 +90,6 @@
     <Compile Include="Points\SnakePoint.cs" />
     <Compile Include="Snakes\Snake.cs" />
     <Compile Include="Enums\SnakeType.cs" />
-    <Compile Include="ConsoleMenu\MenuItems\ValueBasedItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,24 +1,18 @@
 ﻿using System;
+using ConsoleMenuAPI;
 
 namespace ConsoleSnake {
-    public class EndscreenMenu : ConsoleMenu {
+    public class EndscreenMenu : StandardConsoleMenu {
         public SnakeGameStats GameResults { get; set; }
-        public bool Restart { get; private set; } = false;
+        public bool Restart => CurrentPosition == 0;
 
-        public EndscreenMenu() : base(ItemsListHelper.GetEndscreenMenuList(), Localization.ExitString) {
-        }
-
-        public override void ProcessInput(ConsoleKey input) {
-            if (input == ConsoleKey.Enter) {
-                Restart = CurrentPosition == 0 ? true : false;
-                IsEnd = true;
-            }
+        public EndscreenMenu() : base(ItemsListHelper.GetEndscreenMenuList(), SnakeLocalization.ExitStringKey) {
         }
 
         protected override void Draw() {
             Console.Clear();
-            Console.WriteLine(string.Format("\t{0}\n", GameResults.Win ? Localization.Win : Localization.GameOver));
-            Console.WriteLine(string.Format("\t{0}" + GameResults.SnakeLength + "\n", Localization.DisplaySnakeLength));
+            Console.WriteLine(string.Format("\t{0}\n", GameResults.Win ? SnakeLocalization.Win : SnakeLocalization.GameOver));
+            Console.WriteLine(string.Format("\t{0}" + GameResults.SnakeLength + "\n", SnakeLocalization.DisplaySnakeLength));
             DrawMenu();
         }
     }

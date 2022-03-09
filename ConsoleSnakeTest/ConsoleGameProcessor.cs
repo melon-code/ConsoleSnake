@@ -1,9 +1,11 @@
 ﻿using System;
+using ConsoleMenuAPI;
 
 namespace ConsoleSnake {
     public class ConsoleGameProcessor {
         public void Run() {
             MenuEndResult endscreenResult = MenuEndResult.Further;
+            SnakeLocalization.SetRusLocalizationDictionary();
             MainMenu menu = new MainMenu();
             while (endscreenResult == MenuEndResult.Further && menu.ShowDialog() == MenuEndResult.Further) {
                 EndscreenMenu endMenu = new EndscreenMenu();

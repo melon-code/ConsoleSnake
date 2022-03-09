@@ -1,9 +1,7 @@
-﻿namespace ConsoleSnake {
-    public class RusLangDictionary : LocalizationDictionary {
-        const string onTitle = "Да";
-        const string offTitle = "Нет";
-        const string inputNumber = "Введите числовое значение: ";
-        const string exitString = "Выход";
+﻿using ConsoleMenuAPI;
+
+namespace ConsoleSnake {
+    public class SnakeRusDictionary : RusLangDictionary {
         const string height = "Высота";
         const string width = "Ширина";
         const string bigFood = "Большая еда";
@@ -20,26 +18,22 @@
         const string gameOver = "Вы проиграли, попробуйте снова!";
         const string changeLanguage = "Изменить язык";
 
-        public RusLangDictionary() : base() {
-            dictionary.Add(OnTitleKey, onTitle);
-            dictionary.Add(OffTitleKey, offTitle);
-            dictionary.Add(InputNumberKey, inputNumber);
-            dictionary.Add(ExitStringKey, exitString);
-            dictionary.Add(HeightKey, height);
-            dictionary.Add(WidthKey, width);
-            dictionary.Add(BigFoodKey, bigFood);
-            dictionary.Add(PortalBorderKey, portalBorder);
-            dictionary.Add(SpeedKey, speed);
-            dictionary.Add(CustomFieldKey, customField);
-            dictionary.Add(CustomFieldTypeKey, customFieldType);
-            dictionary.Add(NewGameKey, newGame);
-            dictionary.Add(SettingsKey, settings);
-            dictionary.Add(SameRepeatKey, sameRepeat);
-            dictionary.Add(ToMainMenuKey, toMainMenu);
-            dictionary.Add(DisplaySnakeLengthKey, displaySnakeLength);
-            dictionary.Add(WinKey, win);
-            dictionary.Add(GameOverKey, gameOver);
-            dictionary.Add(ChangeLanguageKey, changeLanguage);
+        public SnakeRusDictionary() : base() {
+            dictionary.Add(SnakeLocalization.HeightKey, height);
+            dictionary.Add(SnakeLocalization.WidthKey, width);
+            dictionary.Add(SnakeLocalization.BigFoodKey, bigFood);
+            dictionary.Add(SnakeLocalization.PortalBorderKey, portalBorder);
+            dictionary.Add(SnakeLocalization.SpeedKey, speed);
+            dictionary.Add(SnakeLocalization.CustomFieldKey, customField);
+            dictionary.Add(SnakeLocalization.CustomFieldTypeKey, customFieldType);
+            dictionary.Add(SnakeLocalization.NewGameKey, newGame);
+            dictionary.Add(SnakeLocalization.SettingsKey, settings);
+            dictionary.Add(SnakeLocalization.SameRepeatKey, sameRepeat);
+            dictionary.Add(SnakeLocalization.ToMainMenuKey, toMainMenu);
+            dictionary.Add(SnakeLocalization.DisplaySnakeLengthKey, displaySnakeLength);
+            dictionary.Add(SnakeLocalization.WinKey, win);
+            dictionary.Add(SnakeLocalization.GameOverKey, gameOver);
+            dictionary.Add(SnakeLocalization.ChangeLanguageKey, changeLanguage);
         }
     }
 }

@@ -1,39 +1,25 @@
 ﻿using System;
+using ConsoleMenuAPI;
 
 namespace ConsoleSnake {
     public class MainMenu : ConsoleMenu {
-        SettingsMenu sMenu;
+        const int settingsMenuIndex = 1;
 
-        public SettingsResult Settings => new SettingsResult(sMenu.Height, sMenu.Width, sMenu.BigFood, sMenu.PortalBorders, sMenu.SnakeSpeed, sMenu.IsCustomGrid, sMenu.CustomGridType);
+        SettingsMenu Menu => GetInsertedMenu(settingsMenuIndex) as SettingsMenu;
+        public SettingsResult Settings => new SettingsResult(Menu.Height, Menu.Width, Menu.BigFood, Menu.PortalBorders, Menu.SnakeSpeed, Menu.IsCustomGrid, Menu.CustomGridType);
 
         public MainMenu() : base(ItemsListHelper.GetMainMenuList()) {
-            sMenu = new SettingsMenu(ItemsListHelper.GetSettingsMenuList());
         }
 
-        public override void ProcessInput(ConsoleKey input) {
-            if (input == ConsoleKey.Enter) {
-                if (CurrentPosition == 0) {
-                    EndResult = MenuEndResult.Further;
-                    IsEnd = true;
-                }
-                if (CurrentPosition == 1) {
-                    sMenu.ShowDialog();
-                }
-                if (CurrentPosition == 2) {
-                    EndResult = MenuEndResult.Exit;
-                    IsEnd = true;
-                }
-            }
-            if (input == ConsoleKey.Tab) {
-                Localization.ChangeLanguage();
-                UpdateItemsNames(ItemsListHelper.GetMainMenuNames());
-                sMenu.UpdateItemsNames(ItemsListHelper.GetSettingsMenuNames());
-            }
+        protected override void ProcessInput(ConsoleKey input) {
+            if (input == ConsoleKey.Tab) 
+                SnakeLocalization.ChangeLanguage();
+            ProcessInputByItem(input);
         }
 
         protected override void Draw() {
             base.Draw();
-            Console.WriteLine(string.Format("\n\t{0} -> Tab", Localization.ChangeLanguageString));
+            Console.WriteLine(string.Format("\n\t{0} -> Tab", SnakeLocalization.ChangeLanguageString));
         }
     }
 }
