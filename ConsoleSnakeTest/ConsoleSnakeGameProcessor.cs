@@ -2,8 +2,8 @@
 using ConsoleMenuAPI;
 
 namespace ConsoleSnake {
-    public class ConsoleGameProcessor {
-        public void Run() {
+    public static class ConsoleSnakeGameProcessor {
+        static public void Run() {
             MenuEndResult endscreenResult = MenuEndResult.Further;
             SnakeLocalization.SetRusLocalizationDictionary();
             MainMenu menu = new MainMenu();
@@ -18,7 +18,6 @@ namespace ConsoleSnake {
                     endscreenResult = endMenu.ShowDialog();
                 } while (endMenu.EndResult == MenuEndResult.Further && endMenu.Restart);
             }
-            Console.Write("\nEXIT!");
         }
     }
 }

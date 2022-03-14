@@ -51,11 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConsoleGameProcessor.cs" />
     <Compile Include="ConsoleSnakeGame.cs" />
     <Compile Include="ConsoleSnakeDrawer.cs" />
     <Compile Include="ConsoleMenu\EndscreenMenu.cs" />
     <Compile Include="ConsoleMenu\ItemsListHelper.cs" />
+    <Compile Include="ConsoleSnakeGameProcessor.cs" />
     <Compile Include="CustomGameGrid\CustomGameGrid.cs" />
     <Compile Include="CustomGameGrid\CustomGameGridParser.cs" />
     <Compile Include="CustomGameGrid\Types\CustomGameGridTypeA.cs" />

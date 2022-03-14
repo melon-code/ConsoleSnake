@@ -5,30 +5,6 @@ using System.Runtime.InteropServices;
 using System.IO;
 
 namespace ConsoleSnake {
-    public class Modif {
-        public void Mod(int[] m) {
-            m[0] = 11;
-            m[1] = 22;
-            m = new int[] { 5, 7, 8 };
-        }
-
-        public void ModInt(int v) {
-            v = 66;
-        }
-    }
-
-    public class Test {
-        public int[] mass = new int[] { 1, 2, 3, 4 };
-        int t = 2;
-        Modif modif = new Modif();
-        public int[] GetMass { get { return mass; } }
-
-        public void TestMod() {
-            modif.Mod(mass);
-            modif.ModInt(t);
-        }
-    }
-
     public class Sample {
         public static int saveBufferWidth;
         public static int saveBufferHeight;
@@ -126,29 +102,9 @@ namespace ConsoleSnake {
         }
     }
 
-    public static class TableDrawer {
-        public static void Draw(FieldItem[,] table, int height, int width) {
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
-                    Console.Write(table[i, j] is BorderItem ? "#" : " ");
-                }
-                Console.WriteLine();
-            }
-        }
-    }
-
     class Program {
         static void Main(string[] args) {
-            //Sample.Go();
-            //Console.Write(Console.LargestWindowWidth);
-            //Console.Write("\n");
-            Console.Write("GO!\n");
-            //ConsoleGame snake = new ConsoleGame(11, 11);
-            //snake.StartLoop();
-            ConsoleGameProcessor pr = new ConsoleGameProcessor();
-            pr.Run();
-            Console.Write("END!\n");
-            Console.Read();
+            ConsoleSnakeGameProcessor.Run();
         }
     }
 }
