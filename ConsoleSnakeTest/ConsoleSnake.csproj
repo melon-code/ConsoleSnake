@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E336E79C-6FF2-4B24-8E93-D29D95868EB7}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>ConsoleSnakeTest</RootNamespace>
-    <AssemblyName>ConsoleSnakeTest</AssemblyName>
+    <RootNamespace>ConsoleSnake</RootNamespace>
+    <AssemblyName>ConsoleSnake</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -33,8 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ConsoleMenuAPI">
-      <HintPath>..\..\ConsoleMenuAPI\ConsoleMenuAPI\bin\Debug\ConsoleMenuAPI.dll</HintPath>
+    <Reference Include="ConsoleMenuAPI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ConsoleMenuAPI.dll</HintPath>
     </Reference>
     <Reference Include="KeystrokeAPI, Version=1.0.6.4, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
