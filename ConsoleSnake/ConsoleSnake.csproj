@@ -52,6 +52,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameGrid\BorderGameGrid.cs" />
+    <Compile Include="GameGrid\BorderlessGameGrid.cs" />
     <Compile Include="ConsoleSnakeGame.cs" />
     <Compile Include="ConsoleSnakeDrawer.cs" />
     <Compile Include="ConsoleMenu\EndscreenMenu.cs" />
@@ -65,7 +67,7 @@
     <Compile Include="CustomGameGrid\CustomGameGridTypes.cs" />
     <Compile Include="Fields\BorderlessField.cs" />
     <Compile Include="Fields\Field.cs" />
-    <Compile Include="GameGrid.cs" />
+    <Compile Include="GameGrid\GameGrid.cs" />
     <Compile Include="Enums\GameState.cs" />
     <Compile Include="Items\BorderItem.cs" />
     <Compile Include="Enums\CollisionType.cs" />
@@ -84,6 +86,7 @@
     <Compile Include="ConsoleMenu\SettingsMenu.cs" />
     <Compile Include="ConsoleMenu\SettingsResult.cs" />
     <Compile Include="ConsoleMenu\SnakeGameStats.cs" />
+    <Compile Include="SnakeSymbols.cs" />
     <Compile Include="Snakes\PortalSnake.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

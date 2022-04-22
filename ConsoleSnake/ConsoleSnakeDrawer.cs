@@ -2,67 +2,90 @@
 
 namespace ConsoleSnake {
     public class ConsoleSnakeDrawer {
-        readonly int initialWindowHeight = Console.WindowHeight;
-        readonly int initialWindowWidth = Console.WindowWidth;
-        readonly int initialBufferHeight = Console.BufferHeight;
-        readonly int initialBufferWidth = Console.BufferWidth;
+        static int VerifyValue(int value, int min, int max) {
+            if (value < min)
+                return min;
+            if (value > max)
+                return max;
+            return value;
+        }
+
+        public static int MaxWindowHeight => Console.LargestWindowHeight;
+        public static int MaxWindowWidth => Console.LargestWindowWidth;
+
+        public const int minWindowHeight = 1;
+        public const int minWindowWidth = 15;
+        const string borderSymbol = "B";
+        const string emptySymbol = " ";
+        const string smallFoodSymbol = "o";
+        const string bigFoodSymbol = "O";
+        const string unknownSymbol = "?";
+
+        readonly int verifiedHeight;
+        readonly int verifiedWidth;
+        int initialHeight;
+        int initialWidth;
+        int initialBufferHeight;
+        int initialBufferWidth;
+        bool initialCursorVisibility;
         Field drawingField;
 
         public ConsoleSnakeDrawer(Field gameField) {
             drawingField = gameField;
+            verifiedHeight = VerifyValue(drawingField.Height, minWindowHeight, MaxWindowHeight);
+            verifiedWidth = VerifyValue(drawingField.Width, minWindowWidth, MaxWindowWidth);
+        }
+
+        void SaveInitialConsoleValues() {
+            initialHeight = Console.WindowHeight;
+            initialWidth = Console.WindowWidth;
+            initialBufferHeight = Console.BufferHeight;
+            initialBufferWidth = Console.BufferWidth;
+            initialCursorVisibility = Console.CursorVisible;
+        }
+
+        void SetConsoleValues(int height, int width, int bufferHeight, int bufferWidth, bool cursorVisible) {
+            Console.CursorVisible = cursorVisible;
+            Console.SetWindowSize(minWindowWidth, minWindowHeight);
+            Console.SetBufferSize(bufferWidth, bufferHeight);
+            Console.SetWindowSize(width, height);
         }
 
         public void SetConsoleWindow() {
             Console.Clear();
-            Console.CursorVisible = false;
-            if (drawingField.Borderless) {
-                Console.WindowHeight = 1;
-                //Console.SetWindowSize(1, 1);
-                //var left = Console.WindowLeft;
-                //var top = Console.WindowTop;
-                //Console.SetBufferSize(gameField.Width, gameField.Height);
-                //Console.BufferHeight = gameField.Height + 1;
-                //Console.WindowHeight = gameField.Height;
-                //Console.BufferWidth = 10;
-                //Console.SetWindowSize(gameField.Width, gameField.Height);
-                var left = Console.WindowLeft;
-                var top = Console.WindowTop;
-            }
+            SaveInitialConsoleValues();
+            SetConsoleValues(verifiedHeight, verifiedWidth, verifiedHeight, verifiedWidth + 1, false);
         }
 
         public void RestoreConsoleWindow() {
-            //Console.SetWindowSize(1, 1);
-            //Console.SetBufferSize(initialBufferHeight, initialBufferWidth);
-            //Console.SetWindowSize(initialWindowHeight, initialWindowWidth);
+            SetConsoleValues(initialHeight, initialWidth, initialBufferHeight, initialBufferWidth, initialCursorVisibility);
         }
 
         string GetHeadChar(Direction direction) {
             switch (direction) {
                 case Direction.Up:
-                    return "^";
+                    return SnakeSymbols.HeadUp;
                 case Direction.Down:
-                    return "v";
+                    return SnakeSymbols.HeadDown;
                 case Direction.Left:
-                    return "<";
+                    return SnakeSymbols.HeadLeft;
                 case Direction.Right:
-                    return ">";
+                    return SnakeSymbols.HeadRight;
                 default:
-                    return ">";
+                    return unknownSymbol;
             }
         }
 
-        string GetDirectionSymbol(Direction direction) { //debug
+        string GetTailChar(Direction direction) {
             switch (direction) {
                 case Direction.Up:
-                    return "U";
-                case Direction.Down:
-                    return "D";
                 case Direction.Left:
-                    return "L";
+                    return SnakeSymbols.TailUL;
+                case Direction.Down:
                 case Direction.Right:
-                    return "R";
+                    return SnakeSymbols.TailDR;
                 default:
-                    return "?";
+                    return unknownSymbol;
             }
         }
 
@@ -72,11 +95,11 @@ namespace ConsoleSnake {
                 case SnakeType.Head:
                     return GetHeadChar(direction);
                 case SnakeType.Body:
-                    return GetDirectionSymbol(direction);
+                    return SnakeSymbols.Body;
                 case SnakeType.Tail:
-                    return "*";
+                    return GetTailChar(direction);
                 default:
-                    return "?";
+                    return unknownSymbol;
             }
         }
 
@@ -87,26 +110,31 @@ namespace ConsoleSnake {
                         Console.Write(DrawSnakeItem(item.GetSnakeItem()));
                         break;
                     case FieldItemType.Border:
-                        Console.Write("B");
+                        Console.Write(borderSymbol);
                         break;
                     case FieldItemType.Food:
-                        Console.Write(Field.GetFoodValue(item) == 1 ? "o" : "O");
+                        Console.Write(Field.GetFoodValue(item) == Field.smallFoodValue ? smallFoodSymbol : bigFoodSymbol);
                         break;
                     default:
-                        Console.Write(" ");
+                        Console.Write(emptySymbol);
                         break;
                 }
             }
             else
-                Console.Write("?");
+                Console.Write(unknownSymbol);
+        }
+
+        void DrawLine(int index) {
+            for (int j = 0; j < verifiedWidth; j++)
+                DrawItem(drawingField.Grid[index, j]);
         }
 
         public void DrawGameField() {
-            for (int i = 0; i < drawingField.Height; i++) {
-                for (int j = 0; j < drawingField.Width; j++) 
-                    DrawItem(drawingField.Grid[i, j]);
+            for (int i = 0; i < verifiedHeight - 1; i++) {
+                DrawLine(i);
                 Console.WriteLine();
             }
+            DrawLine(verifiedHeight - 1);
             Console.SetCursorPosition(0, 0);
         }
     }

@@ -23,8 +23,9 @@ namespace ConsoleSnake {
         }
 
         public static Field CreateField(CustomGameGrid customGrid) {
-            return customGrid.Borderless ? new BorderlessField(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders)
-                : new Field(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders);
+            if (customGrid.Borderless)
+                new BorderlessField(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders);
+            return new Field(customGrid.Grid, customGrid.SnakeHeadX, customGrid.SnakeHeadY, customGrid.SnakeHeadDirection, customGrid.PortalBorders);
         }
 
         public static int GetFoodValue(FieldItem item) {
@@ -33,10 +34,10 @@ namespace ConsoleSnake {
             return 0;
         }
 
+        public const int smallFoodValue = 1;
+        public const int bigFoodValue = 3;
         const string cggExceptionParamName = "Grid";
         const string cggExceptionMessage = "CustomGameGrid can not be null";
-        const int smallFoodValue = 1;
-        const int bigFoodValue = 3;
         const int borderWidth = 1;
         const int defaultBigFoodInterval = 10;
 
@@ -72,7 +73,7 @@ namespace ConsoleSnake {
         }
 
         public Field(int height, int width, bool allowPortalBorders, bool enableBigFood) {
-            Grid = new GameGrid(height, width, Borderless);
+            Grid = GameGrid.CreateGrid(height, width, Borderless);
             snake = allowPortalBorders ? new PortalSnake(Height / 2, Width / 2, LimitX, LimitY, BorderWidth) : new Snake(Height / 2, Width / 2);
             bigFoodEnabled = enableBigFood;
             PrepareForStart();

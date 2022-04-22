@@ -1,56 +1,52 @@
 ﻿using System;
 
 namespace ConsoleSnake {
-    public class GameGrid {
-        static FieldItem GetBorderMark(bool borderless) {
+    public abstract class GameGrid {
+        public static GameGrid CreateGrid(int height, int width, bool borderless) {
             if (borderless)
-                return new EmptyItem();
-            return new BorderItem();
+                return new BorderlessGameGrid(height, width);
+            return new BorderGameGrid(height, width);
         }
 
-        readonly FieldItem[,] gameGrid;
+        public static GameGrid CreateGrid(int height, int width, bool borderless, FieldItem[,] customGameGrid) {
+            if (borderless)
+                return new BorderlessGameGrid(height, width, customGameGrid);
+            return new BorderGameGrid(height, width, customGameGrid);
+        }
+
+        protected readonly FieldItem[,] gameGrid;
         Point tailCoordinates;
         SnakeItem snakeHead;
 
+        protected abstract int MinHeight { get; }
+        protected abstract int MinWidth { get; }
         public int Height { get; }
         public int Width { get; }
         public FieldItem this[int i, int j] { get { return gameGrid[i, j]; } }
 
-        GameGrid(int height, int width) {
-            Height = height;
-            Width = width;
+        protected GameGrid(int height, int width) {
+            Height = height < MinHeight ? MinHeight : height;
+            Width = width < MinWidth ? MinWidth : width;
             gameGrid = new FieldItem[height, width];
-        }
-
-        public GameGrid(int height, int width, bool borderless) : this(height, width) {
             for (int i = 0; i < Height; i++)
                 for (int j = 0; j < Width; j++)
-                    if (!borderless && IsBorder(i, j))
-                        gameGrid[i, j] = new BorderItem();
-                    else
-                        gameGrid[i, j] = new EmptyItem();
+                    InitializeItem(i, j);
         }
 
-        public GameGrid(int height, int width, bool borderless, FieldItem[,] customGameGrid) : this(height, width) {
+        protected GameGrid(int height, int width, FieldItem[,] customGameGrid) : this(height, width) {
             if (customGameGrid.Length < height * width)
                 throw new ArgumentOutOfRangeException();
-            FieldItemType borderMark = borderless ? FieldItemType.Empty : FieldItemType.Border;
             for (int i = 0; i < Height; i++)
                 for (int j = 0; j < Width; j++) {
                     if (customGameGrid[i, j] == null)
                         gameGrid[i, j] = new EmptyItem();
-                    if (IsBorder(i, j))
-                        gameGrid[i, j] = GetBorderMark(borderless);
-                    else
-                        gameGrid[i, j] = customGameGrid[i, j];
+                    CopyItem(i, j, customGameGrid);
                 }
         }
 
-        bool IsBorder(int indX, int indY) {
-            if (indX == 0 || indY == 0 || indX == Height - 1 || indY == Width - 1)
-                return true;
-            return false;
-        }
+        protected abstract void InitializeItem(int indX, int indY);
+
+        protected abstract void CopyItem(int indX, int indY, FieldItem[,] source);
 
         void AddNewItem(Point point, FieldItem item) {
             gameGrid[point.X, point.Y] = item;
