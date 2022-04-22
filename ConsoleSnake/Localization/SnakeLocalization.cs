@@ -10,6 +10,7 @@ namespace ConsoleSnake {
         public const int SpeedKey = 9;
         public const int CustomFieldKey = 10;
         public const int CustomFieldTypeKey = 11;
+        public const int BordelessModeKey = 12;
         public const int NewGameKey = 20;
         public const int SettingsKey = 21;
         public const int SameRepeatKey = 22;

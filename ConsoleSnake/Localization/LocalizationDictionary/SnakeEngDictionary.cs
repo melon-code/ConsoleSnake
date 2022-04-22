@@ -7,6 +7,7 @@ namespace ConsoleSnake {
         const string bigFood = "Big food";
         const string portalBorder = "Portal borders";
         const string speed = "Speed";
+        const string borderlessMode = "Borderless field";
         const string customField = "Custom field";
         const string customFieldType = "Custom field type";
         const string newGame = "New Game";
@@ -24,6 +25,7 @@ namespace ConsoleSnake {
             dictionary.Add(SnakeLocalization.BigFoodKey, bigFood);
             dictionary.Add(SnakeLocalization.PortalBorderKey, portalBorder);
             dictionary.Add(SnakeLocalization.SpeedKey, speed);
+            dictionary.Add(SnakeLocalization.BordelessModeKey, borderlessMode);
             dictionary.Add(SnakeLocalization.CustomFieldKey, customField);
             dictionary.Add(SnakeLocalization.CustomFieldTypeKey, customFieldType);
             dictionary.Add(SnakeLocalization.NewGameKey, newGame);

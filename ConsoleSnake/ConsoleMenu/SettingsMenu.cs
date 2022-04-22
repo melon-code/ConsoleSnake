@@ -23,8 +23,9 @@ namespace ConsoleSnake {
         const int bigFoodIndex = 2;
         const int portalBorderIndex = 3;
         const int snakeSpeedIndex = 4;
-        const int isCustomGridIndex = 5;
-        const int customGridTypeIndex = 6;
+        const int borderlessModeIndex = 5;
+        const int isCustomGridIndex = 6;
+        const int customGridTypeIndex = 7;
 
         public bool LanguageChanged { get; private set; } = false;
         public int Height => GetInt(heightIndex);
@@ -32,6 +33,7 @@ namespace ConsoleSnake {
         public bool BigFood => GetBool(bigFoodIndex);
         public bool PortalBorders => GetBool(portalBorderIndex);
         public int SnakeSpeed => GetInt(snakeSpeedIndex);
+        public bool Borderless => GetBool(borderlessModeIndex);
         public bool IsCustomGrid => GetBool(isCustomGridIndex);
         public int? CustomGridType {
             get {

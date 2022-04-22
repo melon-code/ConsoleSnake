@@ -6,8 +6,8 @@ namespace ConsoleSnake {
     public static class ItemsListHelper {
         const int defaultHeight = 10;
         const int defaultWidth = 10;
-        const int minHeight = 10;
-        const int minWidth = 15;
+        const int minHeight = 4;
+        const int minWidth = ConsoleSnakeDrawer.minWindowWidth;
         const int defaultSpeed = 5; //500 ms
         const int minSpeed = 1;
         const int maxSpeed = 10;
@@ -19,7 +19,7 @@ namespace ConsoleSnake {
                 new IntMenuItem(SnakeLocalization.HeightKey, defaultHeight, minHeight, ConsoleSnakeDrawer.MaxWindowHeight),
                 new IntMenuItem(SnakeLocalization.WidthKey, defaultWidth, minWidth, ConsoleSnakeDrawer.MaxWindowWidth), new BoolMenuItem(SnakeLocalization.BigFoodKey, false),
                 new BoolMenuItem(SnakeLocalization.PortalBorderKey, false), new IntMenuItem(SnakeLocalization.SpeedKey, defaultSpeed, minSpeed, maxSpeed),
-                new DependencyBoolMenuItem(SnakeLocalization.CustomFieldKey, false, dependencies), customTypes
+                new BoolMenuItem(SnakeLocalization.BordelessModeKey, false), new DependencyBoolMenuItem(SnakeLocalization.CustomFieldKey, false, dependencies), customTypes
             };
         }
 

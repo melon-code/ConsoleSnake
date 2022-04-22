@@ -6,7 +6,8 @@ namespace ConsoleSnake {
         const int settingsMenuIndex = 1;
 
         SettingsMenu Menu => GetInsertedMenu(settingsMenuIndex) as SettingsMenu;
-        public SettingsResult Settings => new SettingsResult(Menu.Height, Menu.Width, Menu.BigFood, Menu.PortalBorders, Menu.SnakeSpeed, Menu.IsCustomGrid, Menu.CustomGridType);
+        public SettingsResult Settings => 
+            new SettingsResult(Menu.Height, Menu.Width, Menu.BigFood, Menu.PortalBorders, Menu.SnakeSpeed, Menu.Borderless, Menu.IsCustomGrid, Menu.CustomGridType);
 
         public MainMenu() : base(ItemsListHelper.GetMainMenuList()) {
         }

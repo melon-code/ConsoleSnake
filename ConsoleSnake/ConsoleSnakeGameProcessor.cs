@@ -12,7 +12,7 @@ namespace ConsoleSnake {
                 do {
                     var result = menu.Settings;
                     ConsoleSnakeGame snakeGame = result.IsCustomGrid ? new ConsoleSnakeGame(SettingsMenu.GetCustomGrid(result.CustomGridType.Value), result.SnakeSpeed)
-                        : new ConsoleSnakeGame(result.Height, result.Width, false, result.PortalBorders, result.BigFood, result.SnakeSpeed);
+                        : new ConsoleSnakeGame(result.Height, result.Width, result.Borderless, result.PortalBorders, result.BigFood, result.SnakeSpeed);
                     snakeGame.StartLoop();
                     endMenu.GameResults = snakeGame.Results;
                     endscreenResult = endMenu.ShowDialog();
