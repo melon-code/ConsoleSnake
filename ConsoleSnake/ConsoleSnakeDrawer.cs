@@ -124,9 +124,9 @@ namespace ConsoleSnake {
                 Console.Write(unknownSymbol);
         }
 
-        void DrawLine(int index) {
+        void DrawLine(int line) {
             for (int j = 0; j < verifiedWidth; j++)
-                DrawItem(drawingField.Grid[index, j]);
+                DrawItem(drawingField.Grid[line, j]);
         }
 
         public void DrawGameField() {

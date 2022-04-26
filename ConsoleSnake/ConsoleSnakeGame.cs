@@ -9,7 +9,6 @@ namespace ConsoleSnake {
         readonly int snakeSpeed;
         Field gameField;
         ConsoleSnakeDrawer drawer;
-        bool isFirstTurn = true;
 
         public bool AnyKeyPressed { get; private set; }
         public SnakeGameStats Results { get { return new SnakeGameStats(gameField.State == GameState.Win ? true : false, gameField.SnakeLenght); } }
@@ -20,7 +19,7 @@ namespace ConsoleSnake {
             drawer = new ConsoleSnakeDrawer(gameField);
         }
 
-        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, bool enableBigFood, int speed) : 
+        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, bool enableBigFood, int speed) :
             this(speed, () => Field.CreateField(height, width, borderless, portalBorders, enableBigFood)) {
         }
 
@@ -47,10 +46,7 @@ namespace ConsoleSnake {
         }
 
         void RenderFrame() {
-            if (isFirstTurn)
-                isFirstTurn = false;
-            else
-                gameField.Iterate();
+            gameField.Iterate();
             drawer.DrawGameField();
             if (gameField.State != GameState.InProgress)
                 Application.Exit();
@@ -59,6 +55,7 @@ namespace ConsoleSnake {
         public void StartLoop() {
             Renderer rend = new Renderer(snakeSpeed, RenderFrame);
             drawer.SetConsoleWindow();
+            drawer.DrawGameField();
             using (var api = new KeystrokeAPI()) {
                 api.CreateKeyboardHook((character) => {
                     if (character.KeyCode != KeyCode.Escape) {

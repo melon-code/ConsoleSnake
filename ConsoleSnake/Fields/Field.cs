@@ -45,9 +45,9 @@ namespace ConsoleSnake {
         readonly bool bigFoodEnabled;
         bool bigFoodSpawned = false;
         int currentBigFoodInterval;
-        protected Snake snake;
         Random rand;
         Direction currentlySetDirection = Direction.Right;
+        protected Snake snake;
 
         public GameGrid Grid { get; protected set; }
 
