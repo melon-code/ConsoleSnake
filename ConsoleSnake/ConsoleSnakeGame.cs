@@ -7,8 +7,8 @@ namespace ConsoleSnake {
         const int defaultSnakeSpeed = 6;
 
         readonly int snakeSpeed;
-        Field gameField;
-        ConsoleSnakeDrawer drawer;
+        readonly Field gameField;
+        readonly ConsoleSnakeDrawer drawer;
 
         public bool AnyKeyPressed { get; private set; }
         public SnakeGameStats Results { get { return new SnakeGameStats(gameField.State == GameState.Win ? true : false, gameField.SnakeLenght); } }
@@ -27,7 +27,7 @@ namespace ConsoleSnake {
             this(speed, () => Field.CreateField(height, width, borderless, portalBorders, bigFoodInterval)) {
         }
 
-        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, int speed) : this(height, width, borderless, portalBorders, false, defaultSnakeSpeed) {
+        public ConsoleSnakeGame(int height, int width, bool borderless, bool portalBorders, int speed) : this(height, width, borderless, portalBorders, false, speed) {
         }
 
         public ConsoleSnakeGame(int height, int width) : this(height, width, false, false, defaultSnakeSpeed) {
