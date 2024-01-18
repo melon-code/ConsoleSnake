@@ -38,7 +38,7 @@ If false border size is included in the `height` and `width` parameters.
 
 `portalBorders`
 
-If true the border teleports snake to other side of the game field
+If true the border teleports snake to the other side of the game field
 
 `enableBigFood`
 
