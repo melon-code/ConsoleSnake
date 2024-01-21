@@ -30,11 +30,9 @@ Game field width
 
 `borderless`
 
-Indicates whether the game field has border items.
-
-If true the edge of the console window becomes the visual border of the game field.
-
-If false border size is included in the `height` and `width` parameters.
+- Indicates whether the game field has border items.
+- If true the edge of the console window becomes the visual border of the game field.
+- If false border size is included in the `height` and `width` parameters.
 
 `portalBorders`
 
